@@ -20,8 +20,11 @@ public class Play {
     @Id
     @GeneratedValue
     private Long pk;
+
     private PetType petType;
+
     @NotNull
     private String title;
+
     private String content;
 }
