@@ -1,7 +1,7 @@
 package org.pettopia.pettopiaback.domain;
 
 
-import com.sun.istack.NotNull;
+import org.jetbrains.annotations.NotNull;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

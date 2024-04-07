@@ -18,6 +18,6 @@ public class DiaryMedicine {
     @Id
     @GeneratedValue
     private Long pk;
-    //private Diary diary;
+    private Diary diary;
     private Medicine medicine;
 }
