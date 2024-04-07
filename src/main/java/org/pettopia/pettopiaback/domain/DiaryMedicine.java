@@ -19,8 +19,10 @@ public class DiaryMedicine {
     @Id
     @GeneratedValue
     private Long pk;
+
     @NotNull
     private Diary diary;
+
     @NotNull
     private Medicine medicine;
 }

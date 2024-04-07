@@ -30,6 +30,8 @@ public class ShotRecords {
     private LocalDateTime createAt = LocalDateTime.now();
 
     private String type;
+
     private int num;
+
     private int age;
 }
