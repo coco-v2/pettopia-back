@@ -1,13 +1,11 @@
 package org.pettopia.pettopiaback.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -23,9 +21,14 @@ public class ShotRecords {
     @GeneratedValue
     private Long pk;
 
-    private Pet pet;
     @NotNull
-    private LocalDateTime createAt;
+    private Pet pet;
+
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "create_at")
+    private LocalDateTime createAt = LocalDateTime.now();
+
     private String type;
     private int num;
     private int age;

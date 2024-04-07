@@ -1,14 +1,13 @@
 package org.pettopia.pettopiaback.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +22,11 @@ public class Pet {
     @GeneratedValue
     private Long pk;
 
+    private User user;
+
     private Species species;
+
+    private String profile;
 
     @NotNull
     private int dogRegNo;
@@ -36,7 +39,9 @@ public class Pet {
     @NotNull
     private boolean neuterYn;
     @NotNull
-    private LocalDateTime createAt;
+    @CreationTimestamp
+    @Column(name = "create_at")
+    private LocalDateTime createAt = LocalDateTime.now();
     @NotNull
     private int environment;
     @NotNull
