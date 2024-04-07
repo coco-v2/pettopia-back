@@ -21,7 +21,8 @@ public class Medicine {
 
     @NotNull
     private String name;
+
     @NotNull
-    private Integer cnt;
+    private int cnt;
 
 }

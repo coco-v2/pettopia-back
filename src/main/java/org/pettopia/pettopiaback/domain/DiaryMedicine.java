@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,6 +19,8 @@ public class DiaryMedicine {
     @Id
     @GeneratedValue
     private Long pk;
+    @NotNull
     private Diary diary;
+    @NotNull
     private Medicine medicine;
 }

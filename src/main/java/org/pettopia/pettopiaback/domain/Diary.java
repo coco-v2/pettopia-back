@@ -1,13 +1,11 @@
 package org.pettopia.pettopiaback.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -26,7 +24,9 @@ public class Diary {
     private Pet pet;
 
     @NotNull
-    private LocalDateTime createAt;
+    @CreationTimestamp
+    @Column(name = "create_at")
+    private LocalDateTime createAt = LocalDateTime.now();
 
     @NotNull
     private int mealCnt;

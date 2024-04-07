@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,6 +20,9 @@ public class Species {
     @GeneratedValue
     private Long pk;
 
+    @NotNull
     private PetType petType;
+
+    @NotNull
     private String name;
 }
