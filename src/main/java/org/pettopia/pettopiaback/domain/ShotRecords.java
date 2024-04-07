@@ -10,18 +10,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "tip")
-public class Tip {
+@Table(name = "shot_reocrds")
+public class ShotRecords {
+
     @Id
     @GeneratedValue
     private Long pk;
-    private PetType petType;
+
+    private Pet pet;
     @NotNull
-    private String content;
-    @NotNull
-    private TipCategory tipCategory;
+    private LocalDateTime createAt;
+    private String type;
+    private int num;
+    private int age;
 }
