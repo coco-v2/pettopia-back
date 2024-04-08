@@ -29,31 +29,47 @@ public class Pet {
     private String profile;
 
     @NotNull
-    private int dogRegNo;
+    private int dogRegNo; // 동물등록번호
+
     @NotNull
-    private String dogNum;
+    private String dogNm; //이름
+
     @NotNull
     private int birth;
+
     @NotNull
-    private boolean sexNum;
+    private boolean sexNm; //성별
+
     @NotNull
-    private boolean neuterYn;
+    private boolean neuterYn; //중성화 여부
+    
     @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
     private LocalDateTime createAt = LocalDateTime.now();
+
     @NotNull
     private int environment;
+
     @NotNull
     private int exercise;
+
     @NotNull
     private int foodCnt;
+
     @NotNull
     private int snackCnt;
+
     @NotNull
     private String protectorName;
+
     @NotNull
     private String protectorPhoneNum;
 
+    @NotNull
+    private int hair;
+
+    @NotNull
+    private int foodKind;
 
 }

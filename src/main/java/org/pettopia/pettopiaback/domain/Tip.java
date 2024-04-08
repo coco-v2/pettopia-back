@@ -19,10 +19,13 @@ public class Tip {
     @Id
     @GeneratedValue
     private Long pk;
+
     @NotNull
     private PetType petType;
+
     @NotNull
     private String content;
+
     @NotNull
     private TipCategory tipCategory;
 }

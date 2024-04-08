@@ -20,6 +20,7 @@ public class PetType {
     @Id
     @GeneratedValue
     private Long pk;
+
     @NotNull
     private String name;
 }
