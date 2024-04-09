@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Pet {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @ManyToOne(fetch = FetchType.LAZY)

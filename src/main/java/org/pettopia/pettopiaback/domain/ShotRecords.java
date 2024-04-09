@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class ShotRecords {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @NotNull

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 @Table(name = "play")
 public class Play {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @ManyToOne(fetch = FetchType.LAZY)
