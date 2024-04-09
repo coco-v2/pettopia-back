@@ -1,0 +1,3 @@
+[submodule "pettopia-back-submodule"]
+	path = pettopia-back-submodule
+	url = https://github.com/coco-v2/pettopia-back-submodule.git
