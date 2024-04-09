@@ -1,10 +1,7 @@
 package org.pettopia.pettopiaback.domain;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 @Table(name = "pet_type")
 public class PetType {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @NotNull

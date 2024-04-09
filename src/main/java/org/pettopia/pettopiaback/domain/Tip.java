@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @Table(name = "tip")
 public class Tip {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @NotNull
@@ -26,5 +26,7 @@ public class Tip {
     private String content;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tip_category")
     private TipCategory tipCategory;
 }

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @Table(name = "diary_medicine")
 public class DiaryMedicine {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @NotNull

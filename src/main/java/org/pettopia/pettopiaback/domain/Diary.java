@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class Diary {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,6 +40,8 @@ public class Diary {
     @NotNull
     private int walkCnt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "condition_of_defecation")
     private ConditionOfDefecation conditionOfDefecation;
 
     private String defecationText;
