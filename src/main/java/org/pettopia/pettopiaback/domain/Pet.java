@@ -22,8 +22,12 @@ public class Pet {
     @GeneratedValue
     private Long pk;
 
-    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_pk")
+    private Users users;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "species_pk")
     private Species species;
 
     private String profile;

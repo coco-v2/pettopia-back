@@ -21,6 +21,8 @@ public class Diary {
     @GeneratedValue
     private Long pk;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_pk")
     private Pet pet;
 
     @NotNull

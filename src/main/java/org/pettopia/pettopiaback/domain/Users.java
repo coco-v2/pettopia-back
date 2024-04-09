@@ -36,5 +36,7 @@ public class Users {
     private String email;
 
     @NotNull
-    private RoleType roleType;
+    @Enumerated(EnumType.STRING)
+    @Column(name="role_type")
+    private RoleType roleType = RoleType.USER;
 }

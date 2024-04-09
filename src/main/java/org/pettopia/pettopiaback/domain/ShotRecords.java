@@ -22,6 +22,8 @@ public class ShotRecords {
     private Long pk;
 
     @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_pk")
     private Pet pet;
 
     @NotNull
