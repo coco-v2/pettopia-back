@@ -36,4 +36,21 @@ public class ShotRecords {
     private int num;
 
     private int age;
+
+    public static ShotRecords makeShotRecord (Pet pet, String type, int num, int age){
+        ShotRecords shotRecords = new ShotRecords();
+        shotRecords.pet =pet;
+        shotRecords.type=type;
+        shotRecords.num = num;
+        shotRecords.age=age;
+        return shotRecords;
+
+    }
+
+    public void modifyShotRecord(Pet pet, String type, int num, int age){
+        this.pet = pet;
+        this.type= type;
+        this.num=num;
+        this.age=age;
+    }
 }
