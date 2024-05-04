@@ -4,28 +4,23 @@ import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
-@AllArgsConstructor
-public class NaverUserInfo implements OAuth2UserInfo {
-    private Map<String, Object> attributes;
+public class NaverUserInfo {
 
-    @Override
+    private static Map<String, Object> response;
+
+    public NaverUserInfo(Map<String, Object> attributes) {
+        response = (Map<String, Object>) attributes.get("response");
+    }
+
     public String getSocialId() {
-        return (String) attributes.get("id");
+        return String.valueOf(response.get("id"));
     }
 
-    @Override
-    public String getProvider() {
-        return "naver";
-    }
-
-    @Override
-    public String getEmail() {
-        return (String) attributes.get("email");
-    }
-
-    @Override
     public String getName() {
-        return (String) attributes.get("name");
+        return String.valueOf(response.get("name"));
     }
 
+    public String getEmail() {
+        return String.valueOf(response.get("email"));
+    }
 }
