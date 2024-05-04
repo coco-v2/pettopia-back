@@ -46,4 +46,16 @@ public class Diary {
 
     private String defecationText;
 
+    public static Diary makeDiary(Pet pet, int mealCnt, int snackCnt, int walkCnt, ConditionOfDefecation conditionOfDefecation, String defecationText ){
+        Diary diary = new Diary();
+        diary.pet = pet;
+        diary.mealCnt=mealCnt;
+        diary.snackCnt = snackCnt;
+        diary.walkCnt = walkCnt;
+        diary.conditionOfDefecation = conditionOfDefecation;
+        diary.defecationText = defecationText;
+        return diary;
+
+    }
+
 }
