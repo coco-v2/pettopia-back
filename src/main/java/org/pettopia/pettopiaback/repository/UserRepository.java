@@ -1,2 +1,16 @@
-package org.pettopia.pettopiaback.repository;public interface UserRepository {
+package org.pettopia.pettopiaback.repository;
+
+import org.pettopia.pettopiaback.domain.Users;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<Users, Long> {
+    @Query("select u from Users u where u.email = :email")
+    Optional<Users> findByEmail(@Param("email") String email);
+
+    @Query("select u from Users u where u.socialId = :socialId")
+    Optional<Users> findBySocialId(@Param("socialId") String socialId);
 }

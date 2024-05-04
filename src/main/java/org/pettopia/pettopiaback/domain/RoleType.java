@@ -1,5 +1,12 @@
 package org.pettopia.pettopiaback.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum RoleType {
-    USER
+    GUEST("ROLE_GUEST"), USER("ROLE_USER");
+
+    private String value;
 }
