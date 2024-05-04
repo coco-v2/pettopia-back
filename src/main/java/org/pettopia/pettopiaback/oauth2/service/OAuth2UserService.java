@@ -7,6 +7,7 @@ import org.pettopia.pettopiaback.domain.SocialType;
 import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
 import org.pettopia.pettopiaback.oauth2.user.KakaoUserInfo;
+import org.pettopia.pettopiaback.oauth2.user.NaverUserInfo;
 import org.pettopia.pettopiaback.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -39,27 +40,58 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         log.info("OAuth2USer = {}", oAuth2User);
         log.info("attributes = {}", attributes);
 
-        // nameAttributeKey
-        String userNameAttributeName = userRequest.getClientRegistration()
-                .getProviderDetails()
-                .getUserInfoEndpoint()
-                .getUserNameAttributeName();
-        log.info("nameAttributeKey = {}", userNameAttributeName);
+//        // nameAttributeKey
+//        String userNameAttributeName = userRequest.getClientRegistration()
+//                .getProviderDetails()
+//                .getUserInfoEndpoint()
+//                .getUserNameAttributeName();
+//        log.info("nameAttributeKey = {}", userNameAttributeName);
+//
+//        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
+//        String socialId = kakaoUserInfo.getSocialId();
+//        String name = kakaoUserInfo.getName();
+//        String email = kakaoUserInfo.getEmail();
+//
+//        // 소셜 ID 로 사용자를 조회, 없으면 socialId 와 이름으로 사용자 생성
+//        Optional<Users> bySocialId = userRepository.findBySocialId(socialId);
+//        Users member = bySocialId.orElseGet(
+//                () -> saveSocialMember(socialId, name, email, SocialType.KAKAO)
+//        );
+//
+//        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())),
+//                attributes);
 
-        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
-        String socialId = kakaoUserInfo.getSocialId();
-        String name = kakaoUserInfo.getName();
-        String email = kakaoUserInfo.getEmail();
+        String providerId = userRequest.getClientRegistration().getRegistrationId();
 
-        // 소셜 ID 로 사용자를 조회, 없으면 socialId 와 이름으로 사용자 생성
+        if ("kakao".equals(providerId)) {
+            KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
+            String socialId = kakaoUserInfo.getSocialId();
+            String name = kakaoUserInfo.getName();
+            String email = kakaoUserInfo.getEmail();
+            return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO);
+        } else if ("naver".equals(providerId)) {
+            NaverUserInfo naverUserInfo = new NaverUserInfo(attributes);
+            String socialId = naverUserInfo.getSocialId();
+            String name = naverUserInfo.getName();
+            String email = naverUserInfo.getEmail();
+            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER);
+        }
+
+        throw new UnsupportedOperationException("Unsupported provider: " + providerId);
+
+    }
+
+    //만든거
+
+    private OAuth2User processSocialUser(Map<String, Object> attributes, String socialId, String name, String email, SocialType type) {
         Optional<Users> bySocialId = userRepository.findBySocialId(socialId);
         Users member = bySocialId.orElseGet(
-                () -> saveSocialMember(socialId, name, email, SocialType.KAKAO)
+                () -> saveSocialMember(socialId, name, email, type)
         );
 
-        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())),
-                attributes);
+        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())), attributes);
     }
+
 
     // 소셜 ID 로 가입된 사용자가 없으면 새로운 사용자를 만들어 저장한다
     public Users saveSocialMember(String socialId, String name, String email, SocialType type) {
