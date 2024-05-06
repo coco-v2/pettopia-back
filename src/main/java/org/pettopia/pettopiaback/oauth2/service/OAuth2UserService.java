@@ -6,6 +6,7 @@ import org.pettopia.pettopiaback.domain.RoleType;
 import org.pettopia.pettopiaback.domain.SocialType;
 import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
+import org.pettopia.pettopiaback.oauth2.user.GoogleUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.KakaoUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.NaverUserInfo;
 import org.pettopia.pettopiaback.repository.UserRepository;
@@ -75,6 +76,12 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String name = naverUserInfo.getName();
             String email = naverUserInfo.getEmail();
             return processSocialUser(attributes, socialId, name, email, SocialType.NAVER);
+        } else if ("google".equals(providerId)) {
+            GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
+            String socialId = googleUserInfo.getSocialId();
+            String name = googleUserInfo.getName();
+            String email = googleUserInfo.getEmail();
+            return processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE);
         }
 
         throw new UnsupportedOperationException("Unsupported provider: " + providerId);
