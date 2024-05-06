@@ -10,6 +10,7 @@ import org.pettopia.pettopiaback.oauth2.user.GoogleUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.KakaoUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.NaverUserInfo;
 import org.pettopia.pettopiaback.repository.UserRepository;
+import org.springframework.http.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -17,7 +18,12 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -28,6 +34,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
+
 
     private final UserRepository userRepository;
 
@@ -113,4 +120,39 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 .build();
         return userRepository.save(newMember);
     }
+
+    public void kakaoLogout(String accessToken) {
+        String reqUrl = "https://kapi.kakao.com/v1/user/logout";
+
+        try {
+            URL url = new URL(reqUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            int responseCode = conn.getResponseCode();
+            log.info("[OAuth2UserService.kakaoLogout] Response Code: {}", responseCode);
+
+            BufferedReader br;
+            if (responseCode >= 200 && responseCode <= 300) {
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+
+            StringBuilder responseSb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                responseSb.append(line);
+            }
+            String responseBody = responseSb.toString();
+            log.info("Kakao logout - Response Body: {}", responseBody);
+        } catch (Exception e) {
+            log.error("Error occurred while logging out from Kakao: {}", e.getMessage());
+        }
+    }
+
+
+
+
 }
