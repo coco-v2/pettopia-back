@@ -76,8 +76,12 @@ public class SecurityConfig {
             httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.NEVER);
         });
 
+
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry.anyRequest().permitAll());
+                authorizationManagerRequestMatcherRegistry
+                        .requestMatchers("/api/v1/shot_records/**").authenticated()
+                        .anyRequest().permitAll());
+
 
         http.addFilterBefore(jwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
 
