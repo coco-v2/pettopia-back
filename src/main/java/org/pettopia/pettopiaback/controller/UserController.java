@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.Users;
+import org.pettopia.pettopiaback.service.UserService;
 import org.pettopia.pettopiaback.dto.UserDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
