@@ -1,10 +1,7 @@
 package org.pettopia.pettopiaback.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.User;
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "pet")
+@Builder
 public class Pet {
 
     @Id
@@ -39,41 +37,34 @@ public class Pet {
     private String dogNm; //이름
 
     @NotNull
-    private int birth;
+    private int hair;
 
     @NotNull
     private boolean sexNm; //성별
 
     @NotNull
     private boolean neuterYn; //중성화 여부
+
+    @NotNull
+    private int birth;
     
     @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
     private LocalDateTime createAt = LocalDateTime.now();
 
-    @NotNull
     private int environment;
 
-    @NotNull
     private int exercise;
 
-    @NotNull
     private int foodCnt;
 
-    @NotNull
     private int snackCnt;
 
-    @NotNull
     private String protectorName;
 
-    @NotNull
     private String protectorPhoneNum;
 
-    @NotNull
-    private int hair;
-
-    @NotNull
     private int foodKind;
 
 }

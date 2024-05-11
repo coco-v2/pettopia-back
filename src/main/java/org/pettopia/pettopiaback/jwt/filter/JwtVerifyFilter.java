@@ -22,8 +22,8 @@ import java.util.Map;
 @Slf4j
 public class JwtVerifyFilter extends OncePerRequestFilter {
 
-    // 상품 이미지가 보이지 않기에 상품 이미지를 출력하는 /api/items/view 경로를 추가
-    private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/", "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"};
+    private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/"
+            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"};
 
     private static void checkAuthorizationHeader(String header) {
         if(header == null) {
@@ -41,7 +41,8 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response
+            , FilterChain filterChain) throws ServletException, IOException {
         log.info("--------------------------- JwtVerifyFilter ---------------------------");
 
         String authHeader = request.getHeader(JwtConstants.JWT_HEADER);
