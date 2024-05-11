@@ -49,8 +49,9 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         try {
             checkAuthorizationHeader(authHeader);   // header 가 올바른 형식인지 체크
             String token = JwtUtils.getTokenFromHeader(authHeader);
+            System.out.println(token);
             Authentication authentication = JwtUtils.getAuthentication(token);
-
+            System.out.println(authentication);
             log.info("authentication = {}", authentication);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -63,6 +64,7 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
                 json = gson.toJson(Map.of("Token_Expired", e.getMessage()));
             } else {
                 json = gson.toJson(Map.of("error", e.getMessage()));
+                System.out.println(json);
             }
 
             response.setContentType("application/json; charset=UTF-8");

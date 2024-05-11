@@ -48,7 +48,7 @@ public class JwtUtils {
 
     public static Authentication getAuthentication(String token) {
         Map<String, Object> claims = validateToken(token);
-
+        System.out.println(claims);
         String email = (String) claims.get("email");
         String name = (String) claims.get("name");
         String role = (String) claims.get("role");

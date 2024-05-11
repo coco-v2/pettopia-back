@@ -31,11 +31,13 @@ public class ShotRecordsDTO {
     @AllArgsConstructor
     public static class ShotRecordListsRequest{
         private Long pk;
+        private Long petPk;
+        private String petName;
         private String type;
         private int num;
         private int age;
-        public static ShotRecordListsRequest Records(Long pk, String type, int num, int age){
-            return new ShotRecordListsRequest(pk,type,num,age);
+        public static ShotRecordListsRequest Records(Long pk, Long petPk,String petName,String type, int num, int age){
+            return new ShotRecordListsRequest(pk, petPk,petName,type,num,age);
         }
 
 
@@ -47,6 +49,8 @@ public class ShotRecordsDTO {
     @Builder
     public static class ShotRecordsListResponse{
         private Long pk;
+        private Long petPk;
+        private String petName;
         private String type;
         private int num;
         private int age;

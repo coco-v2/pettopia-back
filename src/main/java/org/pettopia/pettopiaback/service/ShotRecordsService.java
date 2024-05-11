@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -41,6 +42,8 @@ public class ShotRecordsService {
         ShotRecordsDTO.ShotRecordsListResponse response =
                 ShotRecordsDTO.ShotRecordsListResponse.builder()
                         .pk(request.getPk())
+                        .petName(request.getPetName())
+                        .petPk(request.getPetPk())
                         .type(request.getType())
                         .num(request.getNum())
                         .age(request.getAge())
@@ -49,12 +52,15 @@ public class ShotRecordsService {
     }
 
     public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(){
+
         List<ShotRecords> allRecords=shotRecordsRepository.findAll();
         List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS =new ArrayList<>();
         for(ShotRecords shotRecords: allRecords){
             ShotRecordsDTO.ShotRecordListsRequest request=
                     ShotRecordsDTO.ShotRecordListsRequest.Records(
                             shotRecords.getPk(),
+                            shotRecords.getPet().getPk(),
+                            shotRecords.getPet().getDogNm(),
                             shotRecords.getType(),
                             shotRecords.getNum(),
                             shotRecords.getAge()
@@ -63,6 +69,8 @@ public class ShotRecordsService {
             ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO=
                     ShotRecordsDTO.ShotRecordsListResponse.builder()
                             .pk(response.getPk())
+                            .petPk(response.getPetPk())
+                            .petName(request.getPetName())
                             .type(response.getType())
                             .num(response.getNum())
                             .age(response.getAge())
