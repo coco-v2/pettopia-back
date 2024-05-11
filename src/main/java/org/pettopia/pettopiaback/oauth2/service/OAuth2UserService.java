@@ -10,7 +10,6 @@ import org.pettopia.pettopiaback.oauth2.user.GoogleUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.KakaoUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.NaverUserInfo;
 import org.pettopia.pettopiaback.repository.UserRepository;
-import org.springframework.http.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,7 +17,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
