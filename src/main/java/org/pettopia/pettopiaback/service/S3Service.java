@@ -40,6 +40,7 @@ public class S3Service {
         log.info("get presinged url");
 
         String fileName = user.getSocialId();
+
         if (amazonS3.doesObjectExist(bucketName, fileName)) {
             amazonS3.deleteObject(bucketName, fileName);
             log.info("Deleted existing file with name: {}", fileName);
