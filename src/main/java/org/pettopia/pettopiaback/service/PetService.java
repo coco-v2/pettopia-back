@@ -27,10 +27,13 @@ public class PetService {
         Species species = speciesRepository.findById(addPetInfoRequest.getSpeciesPk())
                 .orElseThrow(()-> new NotFoundException("해당 품종이 존재하지 않습니다."));
 
+        String profile = addPetInfoRequest.getProfile() != null ? addPetInfoRequest.getProfile() : "";
+
         Pet pet = Pet.builder()
                 .dogRegNo(addPetInfoRequest.getDogRegNo())
                 .dogNm(addPetInfoRequest.getDogNm())
                 .species(species)
+                .profile(profile)
                 .hair(addPetInfoRequest.getHair())
                 .sexNm(addPetInfoRequest.isSexNm())
                 .neuterYn(addPetInfoRequest.isNeuterYn())

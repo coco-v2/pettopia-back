@@ -7,11 +7,16 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.domain.Users;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.UUID;
@@ -22,7 +27,6 @@ import java.util.UUID;
 public class S3Service {
 
     private final AmazonS3 amazonS3;
-    private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.credentials.bucket-name}")
     public String bucketName;
@@ -30,16 +34,13 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+
     //Pre-Signed URL 받아옴
-    public String getPreSignedUrl(String prefix, String fileName) {
-        String onlyOneFileName = onlyOneFileName(fileName);
+    public String getPreSignedUrl(Users user) {
 
         log.info("get presinged url");
 
-        if (!prefix.equals("")) {
-            fileName = prefix + "/" + fileName;
-        }
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(fileName);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(user.getSocialId());
         URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
     }
@@ -62,10 +63,6 @@ public class S3Service {
         expiration.setTime(expTimeMillis);
         log.info(expiration.toString());
         return expiration;
-    }
-
-    private String onlyOneFileName(String filename){
-        return UUID.randomUUID().toString()+filename;
     }
 
 

@@ -20,6 +20,8 @@ public class PetInfoDTO {
         @NotNull(message = "품종 pk가 null이면 안됩니다.")
         private Long speciesPk;
 
+        private String profile;
+
         @NotNull(message = "단장모가 null이면 안됩니다.")
         private int hair;
 
