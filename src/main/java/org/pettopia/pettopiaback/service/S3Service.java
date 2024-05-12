@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.domain.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ import java.util.UUID;
 public class S3Service {
 
     private final AmazonS3 amazonS3;
-    private final AmazonS3Client amazonS3Client;
+
     @Value("${cloud.aws.credentials.bucket-name}")
     public String bucketName;
 
@@ -35,12 +36,11 @@ public class S3Service {
 
 
     //Pre-Signed URL 받아옴
-    public String getPreSignedUrl(String fileName) {
-        String onlyOneFileName = onlyOneFileName(fileName);
+    public String getPreSignedUrl(Users user) {
 
         log.info("get presinged url");
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(fileName);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(user.getSocialId());
         URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
     }
@@ -63,10 +63,6 @@ public class S3Service {
         expiration.setTime(expTimeMillis);
         log.info(expiration.toString());
         return expiration;
-    }
-
-    private String onlyOneFileName(String filename){
-        return UUID.randomUUID().toString()+filename;
     }
 
 
