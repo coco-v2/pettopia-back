@@ -1,15 +1,23 @@
 package org.pettopia.pettopiaback.controller;
 
 import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.S3ImageDTO;
+import org.pettopia.pettopiaback.exception.NotFoundException;
+import org.pettopia.pettopiaback.repository.UserRepository;
 import org.pettopia.pettopiaback.service.S3Service;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +33,7 @@ public class S3Controller {
 
     @PostMapping("/presigned")
     public ResponseEntity getS3PresignedKey(@RequestBody S3ImageDTO s3ImageDTO) {
-        String preSignedUrl = s3Service.getPreSignedUrl(s3ImageDTO.getFolderName(), s3ImageDTO.getImageName());
+        String preSignedUrl = s3Service.getPreSignedUrl(s3ImageDTO.getImageName());
 
         Map<String, String> map = new HashMap<>();
         map.put("presigned_url", preSignedUrl);
@@ -42,5 +50,7 @@ public class S3Controller {
             throw new IOException("Error deleting file from S3", e);
         }
     }
+
+
 
 }
