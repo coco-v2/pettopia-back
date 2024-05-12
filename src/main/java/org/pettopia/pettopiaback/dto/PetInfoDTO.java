@@ -32,5 +32,14 @@ public class PetInfoDTO {
         @NotNull(message = "생년월일이 null이면 안됩니다.")
         private int birth;
 
+        @NotNull(message = "몸무게가 null이면 안됩니다.")
+        private float weight;
+
+        @NotNull(message = "보호자 이름이 null이면 안됩니다.")
+        private String protectorName;
+
+        @NotNull(message = "보호자 연락처가 null이면 안됩니다.")
+        private String protectorPhoneNum;
+
     }
 }

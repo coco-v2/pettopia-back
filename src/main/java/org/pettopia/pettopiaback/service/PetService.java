@@ -35,6 +35,9 @@ public class PetService {
                 .sexNm(addPetInfoRequest.isSexNm())
                 .neuterYn(addPetInfoRequest.isNeuterYn())
                 .birth(addPetInfoRequest.getBirth())
+                .weight(addPetInfoRequest.getWeight())
+                .protectorName(addPetInfoRequest.getProtectorName())
+                .protectorPhoneNum(addPetInfoRequest.getProtectorPhoneNum())
                 .createAt(LocalDateTime.now())
                 .build();
 
