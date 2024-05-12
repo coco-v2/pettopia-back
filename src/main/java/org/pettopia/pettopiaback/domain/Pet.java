@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.core.userdetails.User;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -47,7 +45,10 @@ public class Pet {
 
     @NotNull
     private int birth;
-    
+
+    @NotNull
+    private float weight;
+
     @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
@@ -61,8 +62,10 @@ public class Pet {
 
     private int snackCnt;
 
+    @NotNull
     private String protectorName;
 
+    @NotNull
     private String protectorPhoneNum;
 
     private int foodKind;
