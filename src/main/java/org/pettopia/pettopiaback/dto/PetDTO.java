@@ -1,11 +1,11 @@
 package org.pettopia.pettopiaback.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import jakarta.validation.constraints.NotNull;
-import org.pettopia.pettopiaback.domain.Species;
 
-public class PetInfoDTO {
+public class PetDTO {
 
     @AllArgsConstructor
     @Getter
@@ -41,6 +41,26 @@ public class PetInfoDTO {
         private String protectorName;
 
         @NotNull(message = "보호자 연락처가 null이면 안됩니다.")
+        private String protectorPhoneNum;
+
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class PetInfoResponse {
+
+        private Long userPk;
+        private String profile;
+        private String dogNm; // 이름
+        private Long speciesPk; // 품종
+        private int dogRegNo; // 반려동물 등록 번호
+        private int hair; //단장모
+        private boolean sexNm; // 성별
+        private boolean neuterYn; // 중성화여부
+        private int birth; // 생년월일
+        private float weight; //몸무게
+        private String protectorName;
         private String protectorPhoneNum;
 
     }
