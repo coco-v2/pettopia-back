@@ -21,7 +21,10 @@ public class APIController {
 
     @GetMapping("/map/hospital/")
     public ResponseEntity  <List<APIDTO.MapListResponse>> getShotRecordsList() throws Exception {
-       List<APIDTO.MapListResponse> hospitalList = apiService.getHospitalMapList();
+
+        List<APIDTO.MapListResponse> hospitalList = apiService.getHospitalMapList();
         return ResponseEntity.ok(hospitalList);
     }
+
 }
+

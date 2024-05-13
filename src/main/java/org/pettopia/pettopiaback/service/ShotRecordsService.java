@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.domain.ShotRecords;
+import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.repository.PetRepository;
@@ -51,12 +52,17 @@ public class ShotRecordsService {
         return response;
     }
 
-    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(){
 
-        List<ShotRecords> allRecords=shotRecordsRepository.findAll();
-        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS =new ArrayList<>();
-        for(ShotRecords shotRecords: allRecords){
-            ShotRecordsDTO.ShotRecordListsRequest request=
+    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(Users user) {
+        List<Pet> petList = petRepository.findAllByUsers(user);
+        List<ShotRecords> shotRecordsByUser = new ArrayList<>();
+        for (Pet pet : petList) {
+            List<ShotRecords> shotRecordByPet = shotRecordsRepository.findByPet(pet);
+            shotRecordsByUser.addAll(shotRecordByPet);
+        }
+        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS = new ArrayList<>();
+        for (ShotRecords shotRecords : shotRecordsByUser) {
+            ShotRecordsDTO.ShotRecordListsRequest request =
                     ShotRecordsDTO.ShotRecordListsRequest.Records(
                             shotRecords.getPk(),
                             shotRecords.getPet().getPk(),
@@ -66,7 +72,7 @@ public class ShotRecordsService {
                             shotRecords.getAge()
                     );
             ShotRecordsDTO.ShotRecordsListResponse response = getShotRecords(request);
-            ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO=
+            ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO =
                     ShotRecordsDTO.ShotRecordsListResponse.builder()
                             .pk(response.getPk())
                             .petPk(response.getPetPk())
