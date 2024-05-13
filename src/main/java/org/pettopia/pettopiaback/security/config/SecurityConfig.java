@@ -68,6 +68,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+
+        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                authorizationManagerRequestMatcherRegistry
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/v1/shot_records/**").authenticated()//, "/api/v1/pet/info/"
+                        .anyRequest().permitAll()
+        );
+
+
         http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()));
 
         http.csrf(AbstractHttpConfigurer::disable);
@@ -76,8 +85,8 @@ public class SecurityConfig {
             httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.NEVER);
         });
 
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry.anyRequest().permitAll());
+
+
 
         http.addFilterBefore(jwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
 

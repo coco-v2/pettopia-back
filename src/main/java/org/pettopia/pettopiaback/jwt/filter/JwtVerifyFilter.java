@@ -22,8 +22,8 @@ import java.util.Map;
 @Slf4j
 public class JwtVerifyFilter extends OncePerRequestFilter {
 
-    // 상품 이미지가 보이지 않기에 상품 이미지를 출력하는 /api/items/view 경로를 추가
-    private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/", "/index.html"};
+    private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/"
+            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"};
 
     private static void checkAuthorizationHeader(String header) {
         if(header == null) {
@@ -41,7 +41,8 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response
+            , FilterChain filterChain) throws ServletException, IOException {
         log.info("--------------------------- JwtVerifyFilter ---------------------------");
 
         String authHeader = request.getHeader(JwtConstants.JWT_HEADER);
@@ -49,8 +50,9 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         try {
             checkAuthorizationHeader(authHeader);   // header 가 올바른 형식인지 체크
             String token = JwtUtils.getTokenFromHeader(authHeader);
+            System.out.println(token);
             Authentication authentication = JwtUtils.getAuthentication(token);
-
+            System.out.println(authentication);
             log.info("authentication = {}", authentication);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -63,6 +65,7 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
                 json = gson.toJson(Map.of("Token_Expired", e.getMessage()));
             } else {
                 json = gson.toJson(Map.of("error", e.getMessage()));
+                System.out.println(json);
             }
 
             response.setContentType("application/json; charset=UTF-8");

@@ -10,12 +10,12 @@ import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.ShotRecordsRepository;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -43,6 +43,8 @@ public class ShotRecordsService {
         ShotRecordsDTO.ShotRecordsListResponse response =
                 ShotRecordsDTO.ShotRecordsListResponse.builder()
                         .pk(request.getPk())
+                        .petName(request.getPetName())
+                        .petPk(request.getPetPk())
                         .type(request.getType())
                         .num(request.getNum())
                         .age(request.getAge())
@@ -50,27 +52,31 @@ public class ShotRecordsService {
         return response;
     }
 
-    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(@AuthenticationPrincipal Users user){
-        List<Pet> petList = petRepository.findByUsers(user);
-        List<ShotRecords> shotRecordsByUser= new ArrayList<>();
-        for(Pet pet :petList){
+
+    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(Users user) {
+        List<Pet> petList = petRepository.findAllByUsers(user);
+        List<ShotRecords> shotRecordsByUser = new ArrayList<>();
+        for (Pet pet : petList) {
             List<ShotRecords> shotRecordByPet = shotRecordsRepository.findByPet(pet);
             shotRecordsByUser.addAll(shotRecordByPet);
         }
-
-        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS =new ArrayList<>();
-        for(ShotRecords shotRecords: shotRecordsByUser){
-            ShotRecordsDTO.ShotRecordListsRequest request=
+        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS = new ArrayList<>();
+        for (ShotRecords shotRecords : shotRecordsByUser) {
+            ShotRecordsDTO.ShotRecordListsRequest request =
                     ShotRecordsDTO.ShotRecordListsRequest.Records(
                             shotRecords.getPk(),
+                            shotRecords.getPet().getPk(),
+                            shotRecords.getPet().getDogNm(),
                             shotRecords.getType(),
                             shotRecords.getNum(),
                             shotRecords.getAge()
                     );
             ShotRecordsDTO.ShotRecordsListResponse response = getShotRecords(request);
-            ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO=
+            ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO =
                     ShotRecordsDTO.ShotRecordsListResponse.builder()
                             .pk(response.getPk())
+                            .petPk(response.getPetPk())
+                            .petName(request.getPetName())
                             .type(response.getType())
                             .num(response.getNum())
                             .age(response.getAge())
