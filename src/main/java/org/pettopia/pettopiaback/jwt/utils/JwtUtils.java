@@ -50,11 +50,14 @@ public class JwtUtils {
         Map<String, Object> claims = validateToken(token);
         System.out.println(claims);
         String email = (String) claims.get("email");
+        String socialId = (String) claims.get("socialId");
         String name = (String) claims.get("name");
         String role = (String) claims.get("role");
         RoleType memberRole = RoleType.valueOf(role);
 
-        Users user = Users.builder().email(email).name(name).roleType(memberRole).build();
+        Users user = Users.builder()
+                .email(email).socialId(socialId).name(name).roleType(memberRole)
+                .build();
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(user.getRoleType().getValue()));
         PrincipalDetail principalDetail = new PrincipalDetail(user, authorities);
 

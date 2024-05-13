@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +30,7 @@ public class PetService {
     public Pet makePetInfo(String userId, PetDTO.AddPetInfoRequest addPetInfoRequest
     ) throws RuntimeException {
 
-        Users findUser = userRepository.findBySocialId(userId)
+        Users user = userRepository.findBySocialId(userId)
                 .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
 
 
@@ -38,7 +40,7 @@ public class PetService {
         String profile = addPetInfoRequest.getProfile() != null ? addPetInfoRequest.getProfile() : "";
 
         Pet pet = Pet.builder()
-                .users(findUser)
+                .users(user)
                 .dogRegNo(addPetInfoRequest.getDogRegNo())
                 .dogNm(addPetInfoRequest.getDogNm())
                 .species(species)
@@ -64,7 +66,6 @@ public class PetService {
         Pet pet = petRepository.findByUsers(user);
 
         PetDTO.PetInfoResponse petInfoResponse = PetDTO.PetInfoResponse.builder()
-                .userPk(user.getPk())
                 .profile(pet.getProfile())
                 .dogNm(pet.getDogNm())
                 .speciesPk(pet.getSpecies().getPk())
@@ -79,5 +80,34 @@ public class PetService {
                 .build();
 
         return petInfoResponse;
+    }
+
+    public List<PetDTO.PetInfoResponse> getPetInfoList(String userId) {
+
+        Users user = userRepository.findBySocialId(userId)
+                .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
+
+        List<Pet> pets = petRepository.findAllByUsers(user);
+
+        List<PetDTO.PetInfoResponse> petInfoList = new ArrayList<>();
+
+        for (Pet pet : pets) {
+            PetDTO.PetInfoResponse petInfoResponse = PetDTO.PetInfoResponse.builder()
+                    .profile(pet.getProfile())
+                    .dogNm(pet.getDogNm())
+                    .speciesPk(pet.getSpecies().getPk())
+                    .dogRegNo(pet.getDogRegNo())
+                    .hair(pet.getHair())
+                    .sexNm(pet.isSexNm())
+                    .neuterYn(pet.isNeuterYn())
+                    .birth(pet.getBirth())
+                    .weight(pet.getWeight())
+                    .protectorName(pet.getProtectorName())
+                    .protectorPhoneNum(pet.getProtectorPhoneNum())
+                    .build();
+
+            petInfoList.add(petInfoResponse);
+        }
+        return petInfoList;
     }
 }

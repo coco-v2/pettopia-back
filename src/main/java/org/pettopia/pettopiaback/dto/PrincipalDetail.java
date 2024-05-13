@@ -34,6 +34,7 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
         Map<String, Object> info = new HashMap<>();
         info.put("name", user.getName());
         info.put("email", user.getEmail());
+        info.put("socialId", user.getSocialId());
         info.put("role", user.getRoleType());
         return info;
     }

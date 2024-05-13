@@ -1,9 +1,9 @@
 package org.pettopia.pettopiaback.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 public class PetDTO {
 
@@ -50,7 +50,6 @@ public class PetDTO {
     @Builder
     public static class PetInfoResponse {
 
-        private Long userPk;
         private String profile;
         private String dogNm; // 이름
         private Long speciesPk; // 품종
@@ -63,5 +62,15 @@ public class PetDTO {
         private String protectorName;
         private String protectorPhoneNum;
 
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PetInfoListResponse {
+        private int cnt;
+        private List<PetInfoResponse> list;
     }
 }
