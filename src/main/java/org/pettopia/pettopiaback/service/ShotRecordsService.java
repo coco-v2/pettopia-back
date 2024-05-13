@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.domain.ShotRecords;
+import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.ShotRecordsRepository;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +50,16 @@ public class ShotRecordsService {
         return response;
     }
 
-    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(){
-        List<ShotRecords> allRecords=shotRecordsRepository.findAll();
+    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(@AuthenticationPrincipal Users user){
+        List<Pet> petList = petRepository.findByUsers(user);
+        List<ShotRecords> shotRecordsByUser= new ArrayList<>();
+        for(Pet pet :petList){
+            List<ShotRecords> shotRecordByPet = shotRecordsRepository.findByPet(pet);
+            shotRecordsByUser.addAll(shotRecordByPet);
+        }
+
         List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsDTOS =new ArrayList<>();
-        for(ShotRecords shotRecords: allRecords){
+        for(ShotRecords shotRecords: shotRecordsByUser){
             ShotRecordsDTO.ShotRecordListsRequest request=
                     ShotRecordsDTO.ShotRecordListsRequest.Records(
                             shotRecords.getPk(),

@@ -22,6 +22,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.json:json:20230227'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
@@ -65,5 +69,9 @@ task copyPrivate(type: Copy) {
         include "*.yml"
         include "*.properties"
         into 'src/main/resources'
+    }
+
+    jar {
+        enabled = false
     }
 }

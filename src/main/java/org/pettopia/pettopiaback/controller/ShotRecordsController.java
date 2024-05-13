@@ -3,11 +3,13 @@ package org.pettopia.pettopiaback.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.service.ShotRecordsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RequiredArgsConstructor
@@ -25,8 +27,8 @@ public class ShotRecordsController {
     }
 
     @GetMapping("/shot_records/")
-    public ResponseEntity<List<ShotRecordsDTO.ShotRecordsListResponse>> getShotRecordsList(){
-        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsList = shotRecordsService.getShotRecordsList();
+    public ResponseEntity<List<ShotRecordsDTO.ShotRecordsListResponse>> getShotRecordsList(@AuthenticationPrincipal Users users){
+        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsList = shotRecordsService.getShotRecordsList(users);
         return ResponseEntity.ok(shotRecordsList);
     }
     @DeleteMapping("/shot_records/{shot_records_id}")
