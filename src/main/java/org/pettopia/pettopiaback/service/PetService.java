@@ -108,7 +108,7 @@ public class PetService {
         Species species = speciesRepository.findById(petInfoRequest.getSpeciesPk())
                 .orElseThrow(() -> new NotFoundException("해당하는 반려동물의 종류를 찾을 수 없습니다."));
 
-        pet.edit(
+        pet.editInfo(
                 petInfoRequest.getProfile(), petInfoRequest.getDogNm(), species, petInfoRequest.getHair()
                 , petInfoRequest.getDogRegNo(), petInfoRequest.getSexNm(), petInfoRequest.getNeuterYn()
                 , petInfoRequest.getBirth(), petInfoRequest.getWeight(), petInfoRequest.getProtectorName()
@@ -116,6 +116,56 @@ public class PetService {
         );
 
         petRepository.save(pet);
+
+    }
+
+    public void makePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest)
+            throws  RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        pet.updateExtraInfo(
+                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
+                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
+                , petExtraInfoRequest.getSnackCnt()
+        );
+
+        petRepository.save(pet);
+
+    }
+
+    public void updatePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest
+    ) throws  RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        pet.updateExtraInfo(
+                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
+                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
+                , petExtraInfoRequest.getSnackCnt()
+        );
+
+        petRepository.save(pet);
+
+    }
+
+    public PetDTO.PetExtraInfo getPetExtraInfo(Long petPk) throws RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        PetDTO.PetExtraInfo petExtraInfo = PetDTO.PetExtraInfo.builder()
+                .environment(pet.getEnvironment())
+                .exercise(pet.getExercise())
+                .foodCnt(pet.getFoodCnt())
+                .foodKind(pet.getFoodKind())
+                .snackCnt(pet.getSnackCnt())
+                .build();
+
+        return petExtraInfo;
+
 
     }
 }
