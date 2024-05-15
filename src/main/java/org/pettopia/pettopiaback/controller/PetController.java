@@ -54,18 +54,8 @@ public class PetController {
 
         return ResponseEntity.ok(response);
     }
-//    public ResponseEntity<PetDTO.PetInfoResponse> getPetInfo(
-//            @AuthenticationPrincipal PrincipalDetail userDetails
-//    ) throws RuntimeException {
-//
-//        String userId = (String) userDetails.getMemberInfo().get("socialId");
-//
-//
-//        PetDTO.PetInfoResponse petInfoResponse = petService.getPetInfo(userId);
-//
-//        return ResponseEntity.ok(petInfoResponse);
-//    }
-//
+
+
 
 
 }

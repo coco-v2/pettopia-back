@@ -105,9 +105,11 @@ public class PetService {
                     .protectorName(pet.getProtectorName())
                     .protectorPhoneNum(pet.getProtectorPhoneNum())
                     .build();
-
             petInfoList.add(petInfoResponse);
         }
+
         return petInfoList;
+
+
     }
 }
