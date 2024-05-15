@@ -27,7 +27,7 @@ public class PetService {
     private final SpeciesRepository speciesRepository;
     private final UserRepository userRepository;
 
-    public Pet makePetInfo(String userId, PetDTO.AddPetInfoRequest addPetInfoRequest
+    public Pet makePetInfo(String userId, PetDTO.PetInfoRequest addPetInfoRequest
     ) throws RuntimeException {
 
         Users user = userRepository.findBySocialId(userId)
@@ -46,8 +46,8 @@ public class PetService {
                 .species(species)
                 .profile(profile)
                 .hair(addPetInfoRequest.getHair())
-                .sexNm(addPetInfoRequest.isSexNm())
-                .neuterYn(addPetInfoRequest.isNeuterYn())
+                .sexNm(addPetInfoRequest.getSexNm())
+                .neuterYn(addPetInfoRequest.getNeuterYn())
                 .birth(addPetInfoRequest.getBirth())
                 .weight(addPetInfoRequest.getWeight())
                 .protectorName(addPetInfoRequest.getProtectorName())
@@ -69,8 +69,8 @@ public class PetService {
                 .dogRegNo(pet.getDogRegNo())
                 .dogNm(pet.getDogNm())
                 .hair(pet.getHair())
-                .sexNm(pet.isSexNm())
-                .neuterYn(pet.isNeuterYn())
+                .sexNm(pet.getSexNm())
+                .neuterYn(pet.getNeuterYn())
                 .birth(pet.getBirth())
                 .weight(pet.getWeight())
                 .protectorName(pet.getProtectorName())
@@ -98,5 +98,24 @@ public class PetService {
             petInfoList.add(petInfoResponse);
         }
         return petInfoList;
+    }
+
+    public void updatePetInfo(Long petPk, PetDTO.PetInfoRequest petInfoRequest) {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        Species species = speciesRepository.findById(petInfoRequest.getSpeciesPk())
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물의 종류를 찾을 수 없습니다."));
+
+        pet.edit(
+                petInfoRequest.getProfile(), petInfoRequest.getDogNm(), species, petInfoRequest.getHair()
+                , petInfoRequest.getDogRegNo(), petInfoRequest.getSexNm(), petInfoRequest.getNeuterYn()
+                , petInfoRequest.getBirth(), petInfoRequest.getWeight(), petInfoRequest.getProtectorName()
+                , petInfoRequest.getProtectorPhoneNum()
+        );
+
+        petRepository.save(pet);
+
     }
 }

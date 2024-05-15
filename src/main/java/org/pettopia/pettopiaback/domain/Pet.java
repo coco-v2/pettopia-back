@@ -29,38 +29,38 @@ public class Pet {
     private String profile;
 
     @NotNull
-    private int dogRegNo; // 동물등록번호
+    private Integer dogRegNo; // 동물등록번호
 
     @NotNull
     private String dogNm; //이름
 
     @NotNull
-    private int hair;
+    private Integer hair;
 
     @NotNull
-    private boolean sexNm; //성별
+    private Boolean sexNm; //성별
 
     @NotNull
-    private boolean neuterYn; //중성화 여부
+    private Boolean neuterYn; //중성화 여부
 
     @NotNull
-    private int birth;
+    private Integer birth;
 
     @NotNull
-    private float weight;
+    private Float weight;
 
     @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
     private LocalDateTime createAt = LocalDateTime.now();
 
-    private int environment;
+    private Integer environment;
 
-    private int exercise;
+    private Integer exercise;
 
-    private int foodCnt;
+    private Integer foodCnt;
 
-    private int snackCnt;
+    private Integer snackCnt;
 
     @NotNull
     private String protectorName;
@@ -68,6 +68,21 @@ public class Pet {
     @NotNull
     private String protectorPhoneNum;
 
-    private int foodKind;
+    private Integer foodKind;
+
+    public void edit(String profile, String dogNm, Species species, Integer hair
+            , Integer dogRegNo, Boolean sexNm, Boolean neuterYn, Integer birth
+            , Float weight, String protectorName, String protectorPhoneNum) {
+        this.profile = (profile != null)? profile : this.profile;
+        this.dogNm = (dogNm != null)? dogNm : this.dogNm;
+        this.species = (species != null)? species : this.species;
+        this.hair = (hair != null)? hair : this.hair;
+        this.sexNm = (sexNm != null)? sexNm : this.sexNm;
+        this.neuterYn = (neuterYn != null)? neuterYn : this.neuterYn;
+        this.birth = (birth != null)? birth : this.birth;
+        this.weight = (weight != null)? weight : this.weight;
+        this.protectorName = (protectorName != null)? protectorName : this.protectorName;
+        this.protectorPhoneNum = (protectorPhoneNum != null)? protectorPhoneNum : this.protectorPhoneNum;
+    }
 
 }
