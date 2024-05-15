@@ -53,6 +53,7 @@ public class PetDTO {
         private String dogNm; // 이름
     }
 
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -92,3 +93,4 @@ public class PetDTO {
 
     }
 }
+

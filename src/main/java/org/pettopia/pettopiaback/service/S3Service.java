@@ -36,10 +36,9 @@ public class S3Service {
 
 
     //Pre-Signed URL 받아옴
-    public String getPreSignedUrl(Users user) {
+    public String getPreSignedUrl(String fileName) {
         log.info("get presinged url");
 
-        String fileName = user.getSocialId();
         if (amazonS3.doesObjectExist(bucketName, fileName)) {
             amazonS3.deleteObject(bucketName, fileName);
             log.info("Deleted existing file with name: {}", fileName);

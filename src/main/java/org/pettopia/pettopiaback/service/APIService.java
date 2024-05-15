@@ -1,8 +1,5 @@
 package org.pettopia.pettopiaback.service;
 
-
-
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -31,6 +28,8 @@ import java.util.List;
 @Transactional
 @Service
 public class APIService {
+
+
 
  @Value("${API.key}")
  String apiKey;
@@ -134,3 +133,4 @@ public class APIService {
      return response;
  }
 }
+

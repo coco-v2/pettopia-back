@@ -33,10 +33,12 @@ public class PetController {
     public ResponseEntity makePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
             , @RequestBody @Valid PetDTO.PetInfoRequest petInfoRequest
     ) throws RuntimeException {
+
         String userId = (String) userDetails.getMemberInfo().get("socialId");
         log.info("userId",userId);
 
         petService.makePetInfo(userId, petInfoRequest);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
