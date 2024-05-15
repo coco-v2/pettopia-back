@@ -44,23 +44,25 @@ public class Pet {
     private Boolean neuterYn; //중성화 여부
 
     @NotNull
-    private Integer birth;
+    private Integer birth; // 생년월일
 
     @NotNull
-    private Float weight;
+    private Float weight; // 몸무게
 
     @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
     private LocalDateTime createAt = LocalDateTime.now();
 
-    private Integer environment;
+    private Integer environment; //생활환경
 
-    private Integer exercise;
+    private Integer exercise; //운동강도
 
-    private Integer foodCnt;
+    private Integer foodCnt; // 식사 횟수
 
-    private Integer snackCnt;
+    private Integer foodKind; // 식사 종류
+
+    private Integer snackCnt; // 간식 종류
 
     @NotNull
     private String protectorName;
@@ -68,14 +70,13 @@ public class Pet {
     @NotNull
     private String protectorPhoneNum;
 
-    private Integer foodKind;
-
-    public void edit(String profile, String dogNm, Species species, Integer hair
+    public void editInfo(String profile, String dogNm, Species species, Integer hair
             , Integer dogRegNo, Boolean sexNm, Boolean neuterYn, Integer birth
             , Float weight, String protectorName, String protectorPhoneNum) {
         this.profile = (profile != null)? profile : this.profile;
         this.dogNm = (dogNm != null)? dogNm : this.dogNm;
         this.species = (species != null)? species : this.species;
+        this.dogRegNo = (dogRegNo != null)? dogRegNo : this.dogRegNo;
         this.hair = (hair != null)? hair : this.hair;
         this.sexNm = (sexNm != null)? sexNm : this.sexNm;
         this.neuterYn = (neuterYn != null)? neuterYn : this.neuterYn;
@@ -83,6 +84,15 @@ public class Pet {
         this.weight = (weight != null)? weight : this.weight;
         this.protectorName = (protectorName != null)? protectorName : this.protectorName;
         this.protectorPhoneNum = (protectorPhoneNum != null)? protectorPhoneNum : this.protectorPhoneNum;
+    }
+
+    public void updateExtraInfo(Integer environment, Integer exercise, Integer foodCnt
+            , Integer foodKind, Integer snackCnt) {
+        this.environment = (environment != null)? environment : this.environment;
+        this.exercise = (exercise != null)? exercise : this.exercise;
+        this.foodCnt = (foodCnt != null)? foodCnt : this.foodCnt;
+        this.foodKind = (foodKind != null)? foodKind : this.foodKind;
+        this.snackCnt = (snackCnt != null)? snackCnt : this.snackCnt;
     }
 
 }

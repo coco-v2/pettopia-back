@@ -92,5 +92,27 @@ public class PetDTO {
         private String protectorPhoneNum;
 
     }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class PetExtraInfo {
+
+        @NotNull(message = "생활환경이 null이면 안됩니다.")
+        private Integer environment;
+
+        @NotNull(message = "운동강도가 null이면 안됩니다.")
+        private Integer exercise;
+
+        @NotNull(message = "식사횟수가 null이면 안됩니다.")
+        private Integer foodCnt;
+
+        @NotNull(message = "식사종류가 null이면 안됩니다.")
+        private Integer foodKind;
+
+        @NotNull(message = "간식횟수가 null이면 안됩니다.")
+        private Integer snackCnt;
+
+    }
 }
 

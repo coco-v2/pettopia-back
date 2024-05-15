@@ -100,5 +100,63 @@ public class PetController {
 
     }
 
+    @Operation(summary = "반려동물 추가정보 등록", description = """
+    [로그인 필요]
+    201: 성공
+    401: 실패
+    <br>
+    """)
+    @PostMapping("/extrainfo/{petPk}")
+    public ResponseEntity makePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+            , @PathVariable Long petPk
+            , @RequestBody @Valid PetDTO.PetExtraInfo petExtraInfoRequest
+    ) throws RuntimeException {
+
+        String userId = (String) userDetails.getMemberInfo().get("socialId");
+        log.info("userId",userId);
+
+        petService.makePetExtraInfo(petPk, petExtraInfoRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }
+
+    @Operation(summary = "반려동물 추가정보 수정", description = """
+    [로그인 필요]
+    201: 성공
+    401: 실패
+    <br>
+    """)
+    @PatchMapping("/extrainfo/{petPk}")
+    public ResponseEntity updatePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+            , @PathVariable Long petPk
+            , @RequestBody @Valid PetDTO.PetExtraInfo petExtraInfoRequest
+    ) throws RuntimeException {
+
+        String userId = (String) userDetails.getMemberInfo().get("socialId");
+        log.info("userId",userId);
+
+        petService.updatePetExtraInfo(petPk, petExtraInfoRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }
+
+    @Operation(summary = "반려동물 추가 정보 조회", description = """
+    [로그인 필요]
+    200: 성공
+    <br>
+    """)
+    @GetMapping("/extrainfo/{petPk}")
+    public ResponseEntity<PetDTO.PetExtraInfo> getPetExtraInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+            , @PathVariable Long petPk
+    ) throws RuntimeException {
+
+        PetDTO.PetExtraInfo response = petService.getPetExtraInfo(petPk);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }
