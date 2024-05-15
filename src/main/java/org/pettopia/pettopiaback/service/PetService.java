@@ -4,14 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.domain.Species;
-import org.pettopia.pettopiaback.dto.PetInfoDTO;
+import org.pettopia.pettopiaback.domain.Users;
+import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.SpeciesRepository;
+import org.pettopia.pettopiaback.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -21,8 +25,14 @@ public class PetService {
 
     private final PetRepository petRepository;
     private final SpeciesRepository speciesRepository;
+    private final UserRepository userRepository;
 
-    public Pet makePetInfo(PetInfoDTO.AddPetInfoRequest addPetInfoRequest) throws RuntimeException {
+    public Pet makePetInfo(String userId, PetDTO.AddPetInfoRequest addPetInfoRequest
+    ) throws RuntimeException {
+
+        Users user = userRepository.findBySocialId(userId)
+                .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
+
 
         Species species = speciesRepository.findById(addPetInfoRequest.getSpeciesPk())
                 .orElseThrow(()-> new NotFoundException("해당 품종이 존재하지 않습니다."));
@@ -30,6 +40,7 @@ public class PetService {
         String profile = addPetInfoRequest.getProfile() != null ? addPetInfoRequest.getProfile() : "";
 
         Pet pet = Pet.builder()
+                .users(user)
                 .dogRegNo(addPetInfoRequest.getDogRegNo())
                 .dogNm(addPetInfoRequest.getDogNm())
                 .species(species)
@@ -45,5 +56,47 @@ public class PetService {
                 .build();
 
         return petRepository.save(pet);
+    }
+
+    public PetDTO.PetInfoResponse getPetInfo(Long petPk) {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        PetDTO.PetInfoResponse petInfoResponse = PetDTO.PetInfoResponse.builder()
+                .speciesName(pet.getSpecies().getName())
+                .profile(pet.getProfile())
+                .dogRegNo(pet.getDogRegNo())
+                .dogNm(pet.getDogNm())
+                .hair(pet.getHair())
+                .sexNm(pet.isSexNm())
+                .neuterYn(pet.isNeuterYn())
+                .birth(pet.getBirth())
+                .weight(pet.getWeight())
+                .protectorName(pet.getProtectorName())
+                .protectorPhoneNum(pet.getProtectorPhoneNum())
+                .build();
+
+        return petInfoResponse;
+    }
+
+    public List<PetDTO.PetShortInfoResponse> getPetInfoList(String userId) {
+
+        Users user = userRepository.findBySocialId(userId)
+                .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
+
+        List<Pet> pets = petRepository.findAllByUsers(user);
+
+        List<PetDTO.PetShortInfoResponse> petInfoList = new ArrayList<>();
+
+        for (Pet pet : pets) {
+            PetDTO.PetShortInfoResponse petInfoResponse = PetDTO.PetShortInfoResponse.builder()
+                    .petPk(pet.getPk())
+                    .dogNm(pet.getDogNm())
+                    .build();
+
+            petInfoList.add(petInfoResponse);
+        }
+        return petInfoList;
     }
 }
