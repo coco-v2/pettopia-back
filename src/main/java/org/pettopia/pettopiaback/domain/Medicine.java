@@ -23,6 +23,6 @@ public class Medicine {
     private String name;
 
     @NotNull
-    private int cnt;
+    private Integer cnt;
 
 }
