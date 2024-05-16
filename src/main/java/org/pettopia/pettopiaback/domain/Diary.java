@@ -32,13 +32,13 @@ public class Diary {
     private LocalDateTime createAt = LocalDateTime.now();
 
     @NotNull
-    private int mealCnt;
+    private Integer mealCnt;
 
     @NotNull
-    private int snackCnt;
+    private Integer snackCnt;
 
     @NotNull
-    private int walkCnt;
+    private Integer walkCnt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "condition_of_defecation")
@@ -46,7 +46,7 @@ public class Diary {
 
     private String defecationText;
 
-    public static Diary makeDiary(Pet pet, int mealCnt, int snackCnt, int walkCnt, ConditionOfDefecation conditionOfDefecation, String defecationText ){
+    public static Diary makeDiary(Pet pet, Integer mealCnt, Integer snackCnt, Integer walkCnt, ConditionOfDefecation conditionOfDefecation, String defecationText ){
         Diary diary = new Diary();
         diary.pet = pet;
         diary.mealCnt=mealCnt;

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.Users;
+import org.pettopia.pettopiaback.dto.PrincipalDetail;
 import org.pettopia.pettopiaback.service.S3Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,8 +26,11 @@ public class S3Controller {
     private final S3Service s3Service;
 
     @PostMapping("/presigned")
-    public ResponseEntity getS3PresignedKey(@AuthenticationPrincipal Users user) {
-        String preSignedUrl = s3Service.getPreSignedUrl(user);
+    public ResponseEntity getS3PresignedKey(@AuthenticationPrincipal PrincipalDetail userDetails) {
+
+        String userId = (String) userDetails.getMemberInfo().get("socialId");
+
+        String preSignedUrl = s3Service.getPreSignedUrl(userId);
 
         Map<String, String> map = new HashMap<>();
         map.put("presigned_url", preSignedUrl);

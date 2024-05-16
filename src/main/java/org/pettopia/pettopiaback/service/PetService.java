@@ -27,7 +27,7 @@ public class PetService {
     private final SpeciesRepository speciesRepository;
     private final UserRepository userRepository;
 
-    public Pet makePetInfo(String userId, PetDTO.AddPetInfoRequest addPetInfoRequest
+    public Pet makePetInfo(String userId, PetDTO.PetInfoRequest addPetInfoRequest
     ) throws RuntimeException {
 
         Users user = userRepository.findBySocialId(userId)
@@ -46,8 +46,8 @@ public class PetService {
                 .species(species)
                 .profile(profile)
                 .hair(addPetInfoRequest.getHair())
-                .sexNm(addPetInfoRequest.isSexNm())
-                .neuterYn(addPetInfoRequest.isNeuterYn())
+                .sexNm(addPetInfoRequest.getSexNm())
+                .neuterYn(addPetInfoRequest.getNeuterYn())
                 .birth(addPetInfoRequest.getBirth())
                 .weight(addPetInfoRequest.getWeight())
                 .protectorName(addPetInfoRequest.getProtectorName())
@@ -58,21 +58,19 @@ public class PetService {
         return petRepository.save(pet);
     }
 
-    public PetDTO.PetInfoResponse getPetInfo(String userId) {
+    public PetDTO.PetInfoResponse getPetInfo(Long petPk) {
 
-        Users user = userRepository.findBySocialId(userId)
-                .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
-
-        Pet pet = petRepository.findByUsers(user);
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
 
         PetDTO.PetInfoResponse petInfoResponse = PetDTO.PetInfoResponse.builder()
+                .speciesName(pet.getSpecies().getName())
                 .profile(pet.getProfile())
-                .dogNm(pet.getDogNm())
-                .speciesPk(pet.getSpecies().getPk())
                 .dogRegNo(pet.getDogRegNo())
+                .dogNm(pet.getDogNm())
                 .hair(pet.getHair())
-                .sexNm(pet.isSexNm())
-                .neuterYn(pet.isNeuterYn())
+                .sexNm(pet.getSexNm())
+                .neuterYn(pet.getNeuterYn())
                 .birth(pet.getBirth())
                 .weight(pet.getWeight())
                 .protectorName(pet.getProtectorName())
@@ -82,32 +80,93 @@ public class PetService {
         return petInfoResponse;
     }
 
-    public List<PetDTO.PetInfoResponse> getPetInfoList(String userId) {
+    public List<PetDTO.PetShortInfoResponse> getPetInfoList(String userId) {
 
         Users user = userRepository.findBySocialId(userId)
                 .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
 
         List<Pet> pets = petRepository.findAllByUsers(user);
 
-        List<PetDTO.PetInfoResponse> petInfoList = new ArrayList<>();
+        List<PetDTO.PetShortInfoResponse> petInfoList = new ArrayList<>();
 
         for (Pet pet : pets) {
-            PetDTO.PetInfoResponse petInfoResponse = PetDTO.PetInfoResponse.builder()
-                    .profile(pet.getProfile())
+            PetDTO.PetShortInfoResponse petInfoResponse = PetDTO.PetShortInfoResponse.builder()
+                    .petPk(pet.getPk())
                     .dogNm(pet.getDogNm())
-                    .speciesPk(pet.getSpecies().getPk())
-                    .dogRegNo(pet.getDogRegNo())
-                    .hair(pet.getHair())
-                    .sexNm(pet.isSexNm())
-                    .neuterYn(pet.isNeuterYn())
-                    .birth(pet.getBirth())
-                    .weight(pet.getWeight())
-                    .protectorName(pet.getProtectorName())
-                    .protectorPhoneNum(pet.getProtectorPhoneNum())
                     .build();
 
             petInfoList.add(petInfoResponse);
         }
         return petInfoList;
     }
+
+    public void updatePetInfo(Long petPk, PetDTO.PetInfoRequest petInfoRequest) {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        Species species = speciesRepository.findById(petInfoRequest.getSpeciesPk())
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물의 종류를 찾을 수 없습니다."));
+
+        pet.editInfo(
+                petInfoRequest.getProfile(), petInfoRequest.getDogNm(), species, petInfoRequest.getHair()
+                , petInfoRequest.getDogRegNo(), petInfoRequest.getSexNm(), petInfoRequest.getNeuterYn()
+                , petInfoRequest.getBirth(), petInfoRequest.getWeight(), petInfoRequest.getProtectorName()
+                , petInfoRequest.getProtectorPhoneNum()
+        );
+
+        petRepository.save(pet);
+
+    }
+
+    public void makePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest)
+            throws  RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        pet.updateExtraInfo(
+                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
+                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
+                , petExtraInfoRequest.getSnackCnt()
+        );
+
+        petRepository.save(pet);
+
+    }
+
+    public void updatePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest
+    ) throws  RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        pet.updateExtraInfo(
+                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
+                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
+                , petExtraInfoRequest.getSnackCnt()
+        );
+
+        petRepository.save(pet);
+
+    }
+
+    public PetDTO.PetExtraInfo getPetExtraInfo(Long petPk) throws RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        PetDTO.PetExtraInfo petExtraInfo = PetDTO.PetExtraInfo.builder()
+                .environment(pet.getEnvironment())
+                .exercise(pet.getExercise())
+                .foodCnt(pet.getFoodCnt())
+                .foodKind(pet.getFoodKind())
+                .snackCnt(pet.getSnackCnt())
+                .build();
+
+        return petExtraInfo;
+
+
+    }
 }
+
