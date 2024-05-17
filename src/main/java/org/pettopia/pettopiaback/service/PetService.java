@@ -2,11 +2,14 @@ package org.pettopia.pettopiaback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.domain.Medicine;
 import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.domain.Species;
 import org.pettopia.pettopiaback.domain.Users;
+import org.pettopia.pettopiaback.dto.MedicineDTO;
 import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
+import org.pettopia.pettopiaback.repository.MedicineRepository;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.SpeciesRepository;
 import org.pettopia.pettopiaback.repository.UserRepository;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,7 @@ public class PetService {
     private final PetRepository petRepository;
     private final SpeciesRepository speciesRepository;
     private final UserRepository userRepository;
+
 
     public Pet makePetInfo(String userId, PetDTO.PetInfoRequest addPetInfoRequest
     ) throws RuntimeException {
@@ -119,33 +124,34 @@ public class PetService {
 
     }
 
-    public void makePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest)
-            throws  RuntimeException {
-
-        Pet pet = petRepository.findById(petPk)
-                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
-
-        pet.updateExtraInfo(
-                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
-                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
-                , petExtraInfoRequest.getSnackCnt()
-        );
-
-        petRepository.save(pet);
-
-    }
-
-    public void updatePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfoRequest
+    public void makePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfo
     ) throws  RuntimeException {
 
         Pet pet = petRepository.findById(petPk)
                 .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
 
         pet.updateExtraInfo(
-                petExtraInfoRequest.getEnvironment(), petExtraInfoRequest.getExercise()
-                , petExtraInfoRequest.getFoodCnt(), petExtraInfoRequest.getFoodKind()
-                , petExtraInfoRequest.getSnackCnt()
+                petExtraInfo.getEnvironment(), petExtraInfo.getExercise()
+                , petExtraInfo.getFoodCnt(), petExtraInfo.getFoodKind()
+                , petExtraInfo.getSnackCnt()
         );
+
+        petRepository.save(pet);
+
+    }
+
+    public void updatePetExtraInfo(Long petPk, PetDTO.PetExtraInfo petExtraInfo
+    ) throws  RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        pet.updateExtraInfo(
+                petExtraInfo.getEnvironment(), petExtraInfo.getExercise()
+                , petExtraInfo.getFoodCnt(), petExtraInfo.getFoodKind()
+                , petExtraInfo.getSnackCnt()
+        );
+
 
         petRepository.save(pet);
 
@@ -166,6 +172,31 @@ public class PetService {
 
         return petExtraInfo;
 
+
+    }
+
+    public PetDTO.PetRegistrationResponse getPetRegistration(Long petPk) throws RuntimeException {
+
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
+
+        String createAt = pet.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+
+
+        PetDTO.PetRegistrationResponse petRegistrationResponse = PetDTO.PetRegistrationResponse.builder()
+                .speciesName(pet.getSpecies().getName())
+                .profile(pet.getProfile())
+                .dogRegNo(pet.getDogRegNo())
+                .dogNm(pet.getDogNm())
+                .sexNm(pet.getSexNm())
+                .neuterYn(pet.getNeuterYn())
+                .birth(pet.getBirth())
+                .protectorName(pet.getProtectorName())
+                .protectorPhoneNum(pet.getProtectorPhoneNum())
+                .createAt(createAt)
+                .build();
+
+        return petRegistrationResponse;
 
     }
 }

@@ -1,17 +1,15 @@
 package org.pettopia.pettopiaback.domain;
 
 
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "medicine")
 public class Medicine {
 
@@ -24,5 +22,13 @@ public class Medicine {
 
     @NotNull
     private Integer cnt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_pk")
+    private Pet pet;
+
+    public void setCnt(Integer cnt){
+        this.cnt = cnt;
+    }
 
 }
