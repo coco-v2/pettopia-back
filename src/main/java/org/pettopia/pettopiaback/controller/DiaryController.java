@@ -76,10 +76,10 @@ public class DiaryController {
     @PatchMapping("/diary/{diaryPk}")
     public ResponseEntity<DiaryDTO.DiaryResponse> updateDiary(@AuthenticationPrincipal PrincipalDetail userDetails
             , @PathVariable Long diaryPk
-            , @RequestBody @Valid DiaryDTO.DiaryRequest diaryRequest
+            , @RequestBody @Valid DiaryDTO.DiaryUpdateRequest updateRequest
     ) throws NoSuchElementException, ForbiddenException {
         try {
-            DiaryDTO.DiaryResponse response = diaryService.updateDiary(diaryPk, diaryRequest);
+            DiaryDTO.DiaryResponse response = diaryService.updateDiary(diaryPk, updateRequest);
             return ResponseEntity.ok(response);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();

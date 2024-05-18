@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Pet", description = "반려동물 관련 컨트롤러")
+@Tag(name = "Pet 컨트롤러", description = "반려동물 관련 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 @Slf4j

@@ -1,5 +1,6 @@
 package org.pettopia.pettopiaback.jwt.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.jwt.exception.CustomJwtException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Tag(name = "JWT 컨트롤러")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
