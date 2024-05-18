@@ -1,10 +1,7 @@
 package org.pettopia.pettopiaback.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "diary")
 public class Diary {
 
@@ -46,16 +44,6 @@ public class Diary {
 
     private String defecationText;
 
-    public static Diary makeDiary(Pet pet, Integer mealCnt, Integer snackCnt, Integer walkCnt, ConditionOfDefecation conditionOfDefecation, String defecationText ){
-        Diary diary = new Diary();
-        diary.pet = pet;
-        diary.mealCnt=mealCnt;
-        diary.snackCnt = snackCnt;
-        diary.walkCnt = walkCnt;
-        diary.conditionOfDefecation = conditionOfDefecation;
-        diary.defecationText = defecationText;
-        return diary;
-
-    }
+    private String etc;
 
 }

@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.dto.MedicineDTO;
 import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
-import org.pettopia.pettopiaback.service.MedicineService;
 import org.pettopia.pettopiaback.service.PetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

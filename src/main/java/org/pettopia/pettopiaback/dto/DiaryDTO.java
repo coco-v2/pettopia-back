@@ -13,8 +13,6 @@ public class DiaryDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class AddDiaryRequest{
-        @NotNull(message = "반려동물정보가 null이면 안됩니다.")
-        private Long petPk;
 
         @NotNull(message = "식사 횟수가 null이면 안됩니다.")
         private int mealCont;
@@ -26,8 +24,10 @@ public class DiaryDTO {
         private int walkCnt;
 
         private ConditionOfDefecation conditionOfDefecation;
+
         private String defecationText;
 
+        private String etc;
 
     }
 }

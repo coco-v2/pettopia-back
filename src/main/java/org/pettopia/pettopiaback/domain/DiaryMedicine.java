@@ -26,4 +26,6 @@ public class DiaryMedicine {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="medicine_pk")
     private Medicine medicine;
+
+    private Long medicineCnt;
 }
