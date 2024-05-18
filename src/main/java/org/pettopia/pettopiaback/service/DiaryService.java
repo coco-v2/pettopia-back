@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.pettopia.pettopiaback.repository.DiaryRepository;
 import org.pettopia.pettopiaback.repository.PetRepository;
 
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -24,14 +25,22 @@ public class DiaryService {
     private final PetRepository petRepository;
     private final DiaryRepository diaryRepository;
 
-    public Diary makeDiary(DiaryDTO.AddDiaryRequest addDiaryRequest) throws RuntimeException{
+    public void makeDiary(Long petPk, DiaryDTO.AddDiaryRequest addDiaryRequest) throws RuntimeException{
 
-        Pet findPet = petRepository.findById(addDiaryRequest.getPetPk())
-      .orElseThrow(() -> new NotFoundException("반려동물 정보가 없습니다"));
+        Pet findPet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("반려동물 정보가 없습니다"));
 
-        Diary diary = Diary.makeDiary(findPet,addDiaryRequest.getMealCont(), addDiaryRequest.getSnackCnt(), addDiaryRequest.getWalkCnt(), addDiaryRequest.getConditionOfDefecation(), addDiaryRequest.getDefecationText());
-        return diaryRepository.save(diary);
+        Diary diary = Diary.builder()
+                .pet(findPet)
+                .mealCnt(addDiaryRequest.getMealCont())
+                .snackCnt(addDiaryRequest.getSnackCnt())
+                .walkCnt(addDiaryRequest.getWalkCnt())
+                .conditionOfDefecation(addDiaryRequest.getConditionOfDefecation())
+                .defecationText(addDiaryRequest.getDefecationText())
+                .createAt(LocalDateTime.now())
+                .build();
 
+        diaryRepository.save(diary);
 
     }
 }

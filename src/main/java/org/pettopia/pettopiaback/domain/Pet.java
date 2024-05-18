@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,8 +29,7 @@ public class Pet {
 
     private String profile;
 
-    @NotNull
-    private Integer dogRegNo; // 동물등록번호
+    private String dogRegNo; // 동물등록번호
 
     @NotNull
     private String dogNm; //이름
@@ -70,8 +70,11 @@ public class Pet {
     @NotNull
     private String protectorPhoneNum;
 
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Medicine> medicineList;
+
     public void editInfo(String profile, String dogNm, Species species, Integer hair
-            , Integer dogRegNo, Boolean sexNm, Boolean neuterYn, Integer birth
+            , String dogRegNo, Boolean sexNm, Boolean neuterYn, Integer birth
             , Float weight, String protectorName, String protectorPhoneNum) {
         this.profile = (profile != null)? profile : this.profile;
         this.dogNm = (dogNm != null)? dogNm : this.dogNm;
