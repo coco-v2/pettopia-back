@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.service.UserService;
 import org.pettopia.pettopiaback.dto.UserDTO;
-import org.pettopia.pettopiaback.dto.UserDTO;
 import org.pettopia.pettopiaback.oauth2.service.OAuth2UserService;
-import org.pettopia.pettopiaback.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Tag(name = "User", description = "user 관련 API")
+@Tag(name = "로그인", description = "로그인 관련 API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
