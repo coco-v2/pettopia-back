@@ -1,16 +1,14 @@
 package org.pettopia.pettopiaback.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "diary_medicine")
 public class DiaryMedicine {
     @Id
@@ -27,5 +25,5 @@ public class DiaryMedicine {
     @JoinColumn(name="medicine_pk")
     private Medicine medicine;
 
-    private Long medicineCnt;
+    private Integer medicineCnt;
 }

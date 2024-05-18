@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotNull;
 import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
 
+import java.util.List;
+
 
 public class DiaryDTO {
 
@@ -15,19 +17,22 @@ public class DiaryDTO {
     public static class AddDiaryRequest{
 
         @NotNull(message = "식사 횟수가 null이면 안됩니다.")
-        private int mealCont;
+        private Integer mealCont;
 
         @NotNull(message = "간식 횟수가 null이면 안됩니다.")
-        private int snackCnt;
+        private Integer snackCnt;
 
         @NotNull(message = "산책 횟수가 null이면 안됩니다.")
-        private int walkCnt;
+        private Integer walkCnt;
 
         private ConditionOfDefecation conditionOfDefecation;
 
         private String defecationText;
 
         private String etc;
+
+        private List<MedicineDTO.RequestMedicine> medicineList;
+
 
     }
 }
