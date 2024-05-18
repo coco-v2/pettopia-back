@@ -42,13 +42,15 @@ public class DiaryService {
 
         Diary diary = Diary.builder()
                 .pet(findPet)
-                .mealCnt(addDiaryRequest.getMealCont())
+                .mealCnt(addDiaryRequest.getMealCnt())
                 .snackCnt(addDiaryRequest.getSnackCnt())
                 .walkCnt(addDiaryRequest.getWalkCnt())
                 .conditionOfDefecation(addDiaryRequest.getConditionOfDefecation())
                 .defecationText(addDiaryRequest.getDefecationText())
                 .etc(addDiaryRequest.getEtc())
                 .createAt(LocalDateTime.now())
+                .updateAt(LocalDateTime.now())
+                .calendarDate(addDiaryRequest.getCalendarDate())
                 .build();
 
         diaryRepository.save(diary);
@@ -93,7 +95,8 @@ public class DiaryService {
                 diary.getConditionOfDefecation(),
                 diary.getDefecationText(),
                 diary.getEtc(),
-                responseMedicineList
+                responseMedicineList,
+                diary.formatDate(diary.getCalendarDate())
         );
     }
 
@@ -108,12 +111,12 @@ public class DiaryService {
 
     }
 
-    public DiaryDTO.DiaryResponse updateDiary(Long diaryPk, DiaryDTO.DiaryRequest diaryRequest) throws RuntimeException {
+    public DiaryDTO.DiaryResponse updateDiary(Long diaryPk, DiaryDTO.DiaryUpdateRequest diaryRequest) throws RuntimeException {
 
         Diary diary = diaryRepository.findById(diaryPk)
                 .orElseThrow(() -> new NotFoundException("다이어리 정보가 없습니다."));
 
-        diary.updateInfo(diaryRequest.getMealCont(), diary.getSnackCnt(), diary.getWalkCnt()
+        diary.updateInfo(diaryRequest.getMealCnt(), diary.getSnackCnt(), diary.getWalkCnt()
                 , diary.getConditionOfDefecation(), diaryRequest.getDefecationText(), diaryRequest.getEtc());
 
         // 기존 DiaryMedicine 정보 업데이트
@@ -171,7 +174,8 @@ public class DiaryService {
                 diary.getConditionOfDefecation(),
                 diary.getDefecationText(),
                 diary.getEtc(),
-                responseMedicineList
+                responseMedicineList,
+                diary.formatDate(diary.getCalendarDate())
         );
     }
 

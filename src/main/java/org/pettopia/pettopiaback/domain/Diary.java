@@ -5,7 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Getter
@@ -51,6 +53,11 @@ public class Diary {
     @Column(name = "update_at")
     private LocalDateTime updateAt = LocalDateTime.now();
 
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "calendar_date")
+    private LocalDate calendarDate;
+
 
     public void updateInfo(Integer mealCnt, Integer snackCnt, Integer walkCnt
             , ConditionOfDefecation conditionOfDefecation, String defecationText, String etc) {
@@ -61,5 +68,10 @@ public class Diary {
         this.defecationText = (defecationText != null)? defecationText : this.defecationText;
         this.etc = (etc != null)? etc : this.etc;
         this.updateAt = LocalDateTime.now();
+    }
+
+    public String formatDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 E요일");
+        return date.format(formatter);
     }
 }

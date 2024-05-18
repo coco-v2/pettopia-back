@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Tag(name = "S3 컨틀롤러", description = "S3 관련 컨트롤러")
+@Tag(name = "S3 컨트롤러", description = "S3 관련 컨트롤러")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 @RestController

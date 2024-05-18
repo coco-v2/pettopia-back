@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "APIController", description = "API 관련 컨트롤러")
+@Tag(name = "API 컨트롤러", description = "API 관련 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 @Slf4j

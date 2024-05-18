@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Tag(name = "로그인", description = "로그인 관련 API")
+@Tag(name = "로그인 컨트롤러", description = "로그인 관련 API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
