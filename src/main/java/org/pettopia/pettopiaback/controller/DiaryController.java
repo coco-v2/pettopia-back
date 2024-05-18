@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/life")
 public class DiaryController {
     private final DiaryService diaryService;
 
-    @PostMapping("/diary/")
+    @PostMapping("/diary")
     public ResponseEntity makeDiary(@AuthenticationPrincipal PrincipalDetail userDetails,
                                     Long petPk,
                                     @RequestBody @Valid DiaryDTO.AddDiaryRequest addDiaryRequest){
