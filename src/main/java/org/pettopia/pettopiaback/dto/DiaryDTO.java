@@ -12,15 +12,17 @@ import java.util.List;
 public class DiaryDTO {
 
     @Getter
-    @AllArgsConstructor
     @NoArgsConstructor
-    public static class AddDiaryRequest{
+    @AllArgsConstructor
+    public static class DiaryRequest {
 
         @NotNull(message = "식사 횟수가 null이면 안됩니다.")
         private Integer mealCont;
 
         @NotNull(message = "간식 횟수가 null이면 안됩니다.")
         private Integer snackCnt;
+
+        private List<MedicineDTO.RequestMedicine> medicineList;
 
         @NotNull(message = "산책 횟수가 null이면 안됩니다.")
         private Integer walkCnt;
@@ -31,8 +33,27 @@ public class DiaryDTO {
 
         private String etc;
 
-        private List<MedicineDTO.RequestMedicine> medicineList;
+    }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DiaryResponse{
+
+        private Integer mealCont;
+
+        private Integer snackCnt;
+
+        private Integer walkCnt;
+
+        private ConditionOfDefecation conditionOfDefecation;
+
+        private String defecationText;
+
+        private String etc;
+
+        private MedicineDTO.ResponseMedicineList medicineList;
 
     }
+
 }

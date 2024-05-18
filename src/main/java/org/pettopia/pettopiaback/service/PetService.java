@@ -2,14 +2,11 @@ package org.pettopia.pettopiaback.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.pettopia.pettopiaback.domain.Medicine;
 import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.domain.Species;
 import org.pettopia.pettopiaback.domain.Users;
-import org.pettopia.pettopiaback.dto.MedicineDTO;
 import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
-import org.pettopia.pettopiaback.repository.MedicineRepository;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.SpeciesRepository;
 import org.pettopia.pettopiaback.repository.UserRepository;
@@ -113,7 +110,7 @@ public class PetService {
         Species species = speciesRepository.findById(petInfoRequest.getSpeciesPk())
                 .orElseThrow(() -> new NotFoundException("해당하는 반려동물의 종류를 찾을 수 없습니다."));
 
-        pet.editInfo(
+        pet.updateInfo(
                 petInfoRequest.getProfile(), petInfoRequest.getDogNm(), species, petInfoRequest.getHair()
                 , petInfoRequest.getDogRegNo(), petInfoRequest.getSexNm(), petInfoRequest.getNeuterYn()
                 , petInfoRequest.getBirth(), petInfoRequest.getWeight(), petInfoRequest.getProtectorName()
@@ -181,7 +178,6 @@ public class PetService {
                 .orElseThrow(() -> new NotFoundException("해당하는 반려동물이 없습니다."));
 
         String createAt = pet.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-
 
         PetDTO.PetRegistrationResponse petRegistrationResponse = PetDTO.PetRegistrationResponse.builder()
                 .speciesName(pet.getSpecies().getName())

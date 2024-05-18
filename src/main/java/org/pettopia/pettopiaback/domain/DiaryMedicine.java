@@ -26,4 +26,8 @@ public class DiaryMedicine {
     private Medicine medicine;
 
     private Integer medicineCnt;
+
+    public void setMedicineCnt(Integer medicineCnt) {
+        this.medicineCnt = medicineCnt;
+    }
 }

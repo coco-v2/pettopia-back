@@ -1,5 +1,6 @@
 package org.pettopia.pettopiaback.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.dto.APIDTO;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+
+@Tag(name = "APIController", description = "API 관련 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 @Slf4j

@@ -46,4 +46,20 @@ public class Diary {
 
     private String etc;
 
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updateAt = LocalDateTime.now();
+
+
+    public void updateInfo(Integer mealCnt, Integer snackCnt, Integer walkCnt
+            , ConditionOfDefecation conditionOfDefecation, String defecationText, String etc) {
+        this.mealCnt = (mealCnt != null)? mealCnt : this.mealCnt;
+        this.snackCnt = (snackCnt != null)? snackCnt : this.snackCnt;
+        this.walkCnt = (walkCnt != null)? walkCnt : this.walkCnt;
+        this.conditionOfDefecation = (conditionOfDefecation != null)? conditionOfDefecation : this.conditionOfDefecation;
+        this.defecationText = (defecationText != null)? defecationText : this.defecationText;
+        this.etc = (etc != null)? etc : this.etc;
+        this.updateAt = LocalDateTime.now();
+    }
 }

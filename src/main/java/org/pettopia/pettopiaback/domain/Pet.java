@@ -73,7 +73,7 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Medicine> medicineList;
 
-    public void editInfo(String profile, String dogNm, Species species, Integer hair
+    public void updateInfo(String profile, String dogNm, Species species, Integer hair
             , String dogRegNo, Boolean sexNm, Boolean neuterYn, Integer birth
             , Float weight, String protectorName, String protectorPhoneNum) {
         this.profile = (profile != null)? profile : this.profile;

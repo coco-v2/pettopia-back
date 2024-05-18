@@ -1,10 +1,10 @@
 package org.pettopia.pettopiaback.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.dto.MedicineDTO;
-import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
 import org.pettopia.pettopiaback.service.MedicineService;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "약 컨트롤러", description = "약 관련 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 @Slf4j
@@ -37,7 +38,6 @@ public class MeidicineController {
 
         return ResponseEntity.ok(medicineList);
     }
-
 
 
 }
