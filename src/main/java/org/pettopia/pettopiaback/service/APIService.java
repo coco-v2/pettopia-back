@@ -34,7 +34,7 @@ public class APIService {
  @Value("${API.key}")
  String apiKey;
 
-    public List<Map<String, Object>> getHospitalList() throws Exception{
+    public List<Map<String, Object>> getHospitalList(String country) throws Exception{
 
      List<Map<String, Object >> resultMap = new ArrayList<>();
      for(int i=0; i<3;i++){
@@ -95,8 +95,21 @@ public class APIService {
        String tradeState = (String) itemMap.get("TRDSTATENM");
        String address = (String) itemMap.get("RDNWHLADDR");
 
-       if("영업/정상".equals(tradeState) && address.contains("영등포")){
-        resultMap.add(itemMap);
+       Map<String,Object> itemValue = new HashMap<>();
+       if(address.contains(",")){
+        address = address.split(",")[0].trim();
+       }
+       if(address.contains("(")){
+        address = address.split("\\(")[0].trim();
+       }
+       Map<String,Object>ItemValue = new HashMap<>();
+       itemValue.put("address" , address);
+       itemValue.put("name",(String) itemMap.get("BPLCNM"));
+       itemValue.put("phoneNumber", itemMap.get("SITETEL"));
+
+
+       if("영업/정상".equals(tradeState) && address.contains(country)){
+        resultMap.add(itemValue);
        }
 
       }
@@ -107,11 +120,11 @@ public class APIService {
      return resultMap;
  }
 
- public List<APIDTO.MapListResponse> getHospitalMapList ()throws Exception{
-  List<Map<String,Object>>mapList=getHospitalList();
+ public List<APIDTO.MapListResponse> getHospitalMapList (String address)throws Exception{
+  List<Map<String,Object>>mapList=getHospitalList(address);
      List<APIDTO.MapListResponse> apiDTOS = new ArrayList<>();
      for(Map<String,Object> map : mapList){
-      APIDTO.MapListRequest request = APIDTO.MapListRequest.maps((String)map.get("BPLCNM"),(String)map.get("RDNWHLADDR"),(String)map.get("SITETEL"));
+      APIDTO.MapListRequest request = APIDTO.MapListRequest.maps((String)map.get("name"),(String)map.get("address"),(String)map.get("phoneNumber"));
       APIDTO.MapListResponse response = getMapResponse(request);
       APIDTO.MapListResponse mapDTO =
               APIDTO.MapListResponse.builder()
