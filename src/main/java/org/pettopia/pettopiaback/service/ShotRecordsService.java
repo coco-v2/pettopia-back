@@ -10,6 +10,7 @@ import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.repository.PetRepository;
 import org.pettopia.pettopiaback.repository.ShotRecordsRepository;
+import org.pettopia.pettopiaback.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class ShotRecordsService {
     private final PetRepository petRepository;
     private final ShotRecordsRepository shotRecordsRepository;
+    private final UserRepository userRepository;
 
     public ShotRecords makeShotRecords(ShotRecordsDTO.AddShotRecordsRequest addShotRecordsRequest) throws RuntimeException{
         Pet findPet = petRepository.findById(addShotRecordsRequest.getPetPk())
@@ -53,7 +55,9 @@ public class ShotRecordsService {
     }
 
 
-    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(Users user) {
+    public List<ShotRecordsDTO.ShotRecordsListResponse> getShotRecordsList(String userId) {
+        Users user = userRepository.findBySocialId(userId)
+                .orElseThrow(() -> new NotFoundException("해당하는 사용자가 없습니다."));
         List<Pet> petList = petRepository.findAllByUsers(user);
         List<ShotRecords> shotRecordsByUser = new ArrayList<>();
         for (Pet pet : petList) {

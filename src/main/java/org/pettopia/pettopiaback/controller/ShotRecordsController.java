@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.Users;
+import org.pettopia.pettopiaback.dto.PrincipalDetail;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 import org.pettopia.pettopiaback.service.ShotRecordsService;
@@ -30,10 +31,15 @@ public class ShotRecordsController {
     }
 
     @GetMapping("/shot_records/")
-    public ResponseEntity<List<ShotRecordsDTO.ShotRecordsListResponse>> getShotRecordsList(@AuthenticationPrincipal Users users){
-        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsList = shotRecordsService.getShotRecordsList(users);
+    public ResponseEntity<List<ShotRecordsDTO.ShotRecordsListResponse>> getShotRecordsList(@AuthenticationPrincipal PrincipalDetail userDetails){
+
+        String userId = (String)  userDetails.getMemberInfo().get("socialId");
+        log.info("userId",userId);
+
+        List<ShotRecordsDTO.ShotRecordsListResponse> shotRecordsList = shotRecordsService.getShotRecordsList(userId);
         return ResponseEntity.ok(shotRecordsList);
     }
+
     @DeleteMapping("/shot_records/{shot_records_id}")
     public ResponseEntity deleteShotRecord(@PathVariable Long shot_records_id){
         try{
