@@ -3,6 +3,7 @@ package org.pettopia.pettopiaback.dto;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PetDTO {
@@ -17,7 +18,7 @@ public class PetDTO {
         private String dogNm;
 
         @NotNull(message = "반려동물 등록 번호가 null이면 안됩니다.")
-        private Integer dogRegNo;
+        private String dogRegNo;
 
         @NotNull(message = "품종 pk가 null이면 안됩니다.")
         private Long speciesPk;
@@ -73,7 +74,7 @@ public class PetDTO {
 
         private String profile;
 
-        private Integer dogRegNo; // 동물등록번호
+        private String dogRegNo; // 동물등록번호
 
         private String dogNm; //이름
 
@@ -114,5 +115,48 @@ public class PetDTO {
         private Integer snackCnt;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PetExtraInfoAndMedicineRequest {
+        private PetExtraInfo petExtraInfo;
+        private MedicineDTO.RequestMedicineList requestMedicineList;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PetExtraInfoAndMedicineResponse {
+        private PetExtraInfo petExtraInfo;
+        private MedicineDTO.ResponseMedicineList responseMedicineList;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class PetRegistrationResponse {
+
+        private String speciesName;
+
+        private String profile;
+
+        private String dogRegNo; // 동물등록번호
+
+        private String dogNm; //이름
+
+        private Boolean sexNm; //성별
+
+        private Boolean neuterYn; //중성화 여부
+
+        private Integer birth;
+
+        private String protectorName;
+
+        private String protectorPhoneNum;
+
+        private String createAt;
+    }
+
 }
 

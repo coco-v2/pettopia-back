@@ -1,11 +1,14 @@
 package org.pettopia.pettopiaback.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pettopia.pettopiaback.dto.MedicineDTO;
 import org.pettopia.pettopiaback.dto.PetDTO;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
+import org.pettopia.pettopiaback.service.MedicineService;
 import org.pettopia.pettopiaback.service.PetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+@Tag(name = "Pet 컨트롤러", description = "반려동물 관련 컨트롤러")
 @RequiredArgsConstructor
 @RestController
 @Slf4j
@@ -22,6 +25,7 @@ import java.util.List;
 public class PetController {
 
     private final PetService petService;
+    private final MedicineService medicineService;
 
     @Operation(summary = "반려동물 정보 등록", description = """
     [로그인 필요]
@@ -29,7 +33,7 @@ public class PetController {
     401: 실패
     <br>
     """)
-    @PostMapping("/info/")
+    @PostMapping("/info")
     public ResponseEntity makePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
             , @RequestBody @Valid PetDTO.PetInfoRequest petInfoRequest
     ) throws RuntimeException {
@@ -48,7 +52,7 @@ public class PetController {
     200: 성공
     <br>
     """)
-    @GetMapping("/list/")
+    @GetMapping("/list")
     public ResponseEntity<PetDTO.PetInfoListResponse> getPetInfoList(
             @AuthenticationPrincipal PrincipalDetail userDetails
     ) throws RuntimeException {
@@ -74,7 +78,8 @@ public class PetController {
     <br>
     """)
     @GetMapping("/info/{petPk}")
-    public ResponseEntity<PetDTO.PetInfoResponse> getPetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+    public ResponseEntity<PetDTO.PetInfoResponse> getPetInfo(
+            @AuthenticationPrincipal PrincipalDetail userDetails
             , @PathVariable Long petPk
     ) throws RuntimeException {
 
@@ -107,15 +112,17 @@ public class PetController {
     <br>
     """)
     @PostMapping("/extrainfo/{petPk}")
-    public ResponseEntity makePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+    public ResponseEntity makePetExtraInfo(
+            @AuthenticationPrincipal PrincipalDetail userDetails
             , @PathVariable Long petPk
-            , @RequestBody @Valid PetDTO.PetExtraInfo petExtraInfoRequest
+            , @RequestBody @Valid PetDTO.PetExtraInfoAndMedicineRequest request
     ) throws RuntimeException {
 
         String userId = (String) userDetails.getMemberInfo().get("socialId");
         log.info("userId",userId);
 
-        petService.makePetExtraInfo(petPk, petExtraInfoRequest);
+        medicineService.makeMedicineList(petPk, request.getRequestMedicineList());
+        petService.makePetExtraInfo(petPk, request.getPetExtraInfo());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
@@ -128,15 +135,17 @@ public class PetController {
     <br>
     """)
     @PatchMapping("/extrainfo/{petPk}")
-    public ResponseEntity updatePetInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+    public ResponseEntity updatePetExtraInfo(
+            @AuthenticationPrincipal PrincipalDetail userDetails
             , @PathVariable Long petPk
-            , @RequestBody @Valid PetDTO.PetExtraInfo petExtraInfoRequest
+            , @RequestBody @Valid PetDTO.PetExtraInfoAndMedicineRequest petExtraInfoRequest
     ) throws RuntimeException {
 
         String userId = (String) userDetails.getMemberInfo().get("socialId");
         log.info("userId",userId);
 
-        petService.updatePetExtraInfo(petPk, petExtraInfoRequest);
+        petService.updatePetExtraInfo(petPk, petExtraInfoRequest.getPetExtraInfo());
+        medicineService.updateMedicineList(petPk, petExtraInfoRequest.getRequestMedicineList());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
@@ -148,13 +157,34 @@ public class PetController {
     <br>
     """)
     @GetMapping("/extrainfo/{petPk}")
-    public ResponseEntity<PetDTO.PetExtraInfo> getPetExtraInfo(@AuthenticationPrincipal PrincipalDetail userDetails
+    public ResponseEntity<PetDTO.PetExtraInfoAndMedicineResponse> getPetExtraInfo(
+            @AuthenticationPrincipal PrincipalDetail userDetails
             , @PathVariable Long petPk
     ) throws RuntimeException {
 
-        PetDTO.PetExtraInfo response = petService.getPetExtraInfo(petPk);
+        PetDTO.PetExtraInfo petExtraInfo = petService.getPetExtraInfo(petPk);
+        MedicineDTO.ResponseMedicineList medicineList = medicineService.getMedicinesByPetPk(petPk);
+
+        PetDTO.PetExtraInfoAndMedicineResponse response = new PetDTO.PetExtraInfoAndMedicineResponse(petExtraInfo, medicineList);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "반려동물 등록증 조회", description = """
+    [로그인 필요]
+    200: 성공
+    <br>
+    """)
+    @GetMapping("/pet_registration_certificate/{petPk}")
+    public ResponseEntity<PetDTO.PetRegistrationResponse> getPetRegistration(
+            @AuthenticationPrincipal PrincipalDetail userDetails
+            , @PathVariable Long petPk
+    ) throws RuntimeException {
+
+        PetDTO.PetRegistrationResponse response = petService.getPetRegistration(petPk);
+
+        return ResponseEntity.ok(response);
+
     }
 
 

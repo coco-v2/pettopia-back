@@ -1,20 +1,20 @@
 package org.pettopia.pettopiaback.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "diary")
 public class Diary {
 
@@ -46,16 +46,32 @@ public class Diary {
 
     private String defecationText;
 
-    public static Diary makeDiary(Pet pet, Integer mealCnt, Integer snackCnt, Integer walkCnt, ConditionOfDefecation conditionOfDefecation, String defecationText ){
-        Diary diary = new Diary();
-        diary.pet = pet;
-        diary.mealCnt=mealCnt;
-        diary.snackCnt = snackCnt;
-        diary.walkCnt = walkCnt;
-        diary.conditionOfDefecation = conditionOfDefecation;
-        diary.defecationText = defecationText;
-        return diary;
+    private String etc;
 
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updateAt = LocalDateTime.now();
+
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "calendar_date")
+    private LocalDate calendarDate;
+
+
+    public void updateInfo(Integer mealCnt, Integer snackCnt, Integer walkCnt
+            , ConditionOfDefecation conditionOfDefecation, String defecationText, String etc) {
+        this.mealCnt = (mealCnt != null)? mealCnt : this.mealCnt;
+        this.snackCnt = (snackCnt != null)? snackCnt : this.snackCnt;
+        this.walkCnt = (walkCnt != null)? walkCnt : this.walkCnt;
+        this.conditionOfDefecation = (conditionOfDefecation != null)? conditionOfDefecation : this.conditionOfDefecation;
+        this.defecationText = (defecationText != null)? defecationText : this.defecationText;
+        this.etc = (etc != null)? etc : this.etc;
+        this.updateAt = LocalDateTime.now();
     }
 
+    public String formatDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 E요일");
+        return date.format(formatter);
+    }
 }

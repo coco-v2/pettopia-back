@@ -1,16 +1,14 @@
 package org.pettopia.pettopiaback.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 @Table(name = "diary_medicine")
 public class DiaryMedicine {
     @Id
@@ -26,4 +24,10 @@ public class DiaryMedicine {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="medicine_pk")
     private Medicine medicine;
+
+    private Integer medicineCnt;
+
+    public void setMedicineCnt(Integer medicineCnt) {
+        this.medicineCnt = medicineCnt;
+    }
 }
