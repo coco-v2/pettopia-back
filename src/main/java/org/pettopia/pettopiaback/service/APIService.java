@@ -127,6 +127,10 @@ public class APIService {
      return resultMap;
     }
     public int getApiSize() throws Exception {
+        System.out.println("api 검색 시작");
+        System.out.println("api key:" + apiKey);
+
+
         StringBuilder urlBuilder = new StringBuilder("http://openapi.seoul.go.kr:8088");
         urlBuilder.append("/" + URLEncoder.encode(apiKey, "UTF-8"));
         urlBuilder.append("/" + URLEncoder.encode("json", "UTF-8"));
@@ -157,6 +161,8 @@ public class APIService {
         // JSON 문자열을 Map으로 변환
         JSONObject jsonResponse = new JSONObject(sb.toString());
         JSONObject jsonData = jsonResponse.getJSONObject("LOCALDATA_020301"); // 서비스명
+        System.out.println("api 검색 끝");
+        System.out.println(jsonData.getInt("list_total_count"));
         return jsonData.getInt("list_total_count");
     }
 

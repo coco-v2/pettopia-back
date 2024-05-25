@@ -1,8 +1,6 @@
 package org.pettopia.pettopiaback.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
 
@@ -38,6 +36,37 @@ public class DiaryDTO {
         private LocalDate calendarDate;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DiaryListRequest {
+
+       private Long diaryPk;
+
+        private LocalDate calendarDate;
+
+        public static DiaryListRequest diarys(Long diaryPk, LocalDate calendarDate){
+            return new DiaryListRequest(diaryPk,calendarDate);
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DiaryListResponse{
+
+        private Long diaryPk;
+
+        private LocalDate calendarDate;
+
+
+
+    }
+
 
     @Getter
     @NoArgsConstructor

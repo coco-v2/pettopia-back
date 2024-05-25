@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
+import java.util.List;
 
 @Tag(name = "다이어리 컨트롤러", description = "다이어리 관련 컨트롤러")
 @RequiredArgsConstructor
@@ -30,9 +31,9 @@ public class DiaryController {
     [로그인 필요]
     <br>
     """)
-    @PostMapping("/diary")
+    @PostMapping("/diary/{petPk}")
     public ResponseEntity makeDiary(@AuthenticationPrincipal PrincipalDetail userDetails,
-                                    Long petPk,
+                                    @PathVariable Long petPk,
                                     @RequestBody @Valid DiaryDTO.DiaryRequest addDiaryRequest){
         diaryService.makeDiary(petPk, addDiaryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -49,6 +50,16 @@ public class DiaryController {
 
         DiaryDTO.DiaryResponse response = diaryService.getDiary(diaryPk);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "다이어리 리스트 조회", description = """
+      [로그인 필요]
+            <br>""")
+    @GetMapping("/diary/list/{petPk}")
+    public ResponseEntity<List<DiaryDTO.DiaryListResponse>> getDiaryList(@AuthenticationPrincipal PrincipalDetail userDetails
+            , @PathVariable Long petPk){
+        List<DiaryDTO.DiaryListResponse> response = diaryService.getDiaryList(petPk);
         return ResponseEntity.ok(response);
     }
 
