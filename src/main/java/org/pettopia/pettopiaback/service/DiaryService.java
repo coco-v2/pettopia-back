@@ -19,6 +19,7 @@ import org.pettopia.pettopiaback.repository.DiaryRepository;
 import org.pettopia.pettopiaback.repository.PetRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class DiaryService {
     private final MedicineRepository medicineRepository;
     private final DiaryMedicineRepository diaryMedicineRepository;
     private final MedicineService medicineService;
+
 
     public void makeDiary(Long petPk, DiaryDTO.DiaryRequest addDiaryRequest) throws RuntimeException {
 
@@ -67,6 +69,39 @@ public class DiaryService {
 
             diaryMedicineRepository.save(diaryMedicine);
         }
+
+    }
+
+    public DiaryDTO.DiaryListResponse getDiaryList(DiaryDTO.DiaryListRequest request){
+        DiaryDTO.DiaryListResponse response =
+                DiaryDTO.DiaryListResponse.builder()
+                        .diaryPk(request.getDiaryPk())
+                        .calendarDate(request.getCalendarDate())
+                        .build();
+        return response;
+    }
+    public List<DiaryDTO.DiaryListResponse> getDiaryList(Long petPk) throws RuntimeException {
+        Pet findPet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("반려동물 정보가 없습니다"));
+        List<Diary> findDiary = diaryRepository.findByPet(findPet);
+        List<DiaryDTO.DiaryListResponse> diaryDTOs = new ArrayList<>();
+        for(Diary diary: findDiary ){
+            DiaryDTO.DiaryListRequest request =
+                    DiaryDTO.DiaryListRequest.diarys(
+                            diary.getPk(),
+                            diary.getCalendarDate()
+                    );
+            DiaryDTO.DiaryListResponse response = getDiaryList(request);
+            DiaryDTO.DiaryListResponse diaryListResponse =
+                    DiaryDTO.DiaryListResponse.builder()
+                            .diaryPk(response.getDiaryPk())
+                            .calendarDate(response.getCalendarDate())
+                            .build();
+            diaryDTOs.add(diaryListResponse);
+
+        }
+        return  diaryDTOs;
+
 
     }
 
