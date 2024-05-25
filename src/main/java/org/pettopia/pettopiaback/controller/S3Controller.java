@@ -26,11 +26,9 @@ public class S3Controller {
     private final S3Service s3Service;
 
     @PostMapping("/presigned")
-    public ResponseEntity getS3PresignedKey(@AuthenticationPrincipal PrincipalDetail userDetails) {
+    public ResponseEntity getS3PresignedKey(@AuthenticationPrincipal PrincipalDetail userDetails, @RequestBody Long petPk) {
 
-        String userId = (String) userDetails.getMemberInfo().get("socialId");
-
-        String preSignedUrl = s3Service.getPreSignedUrl(userId);
+        String preSignedUrl = s3Service.getPreSignedUrl(String.valueOf(petPk));
 
         Map<String, String> map = new HashMap<>();
         map.put("presigned_url", preSignedUrl);

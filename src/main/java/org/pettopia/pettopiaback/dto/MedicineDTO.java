@@ -11,9 +11,9 @@ public class MedicineDTO {
     @Getter
     public static class RequestMedicine {
         @NotNull(message = "약 이름이 null이면 안됩니다.")
-        String name;
+        private String name;
         @NotNull(message = "약 개수가 null이면 안됩니다.")
-        Integer cnt;
+        private Integer cnt;
     }
 
     @Getter
