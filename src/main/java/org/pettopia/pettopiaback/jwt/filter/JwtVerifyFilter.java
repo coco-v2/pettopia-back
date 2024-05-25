@@ -23,7 +23,7 @@ import java.util.Map;
 public class JwtVerifyFilter extends OncePerRequestFilter {
 
     private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/"
-            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"};
+            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html", "/api/v1/life/tip"};
 
     private static void checkAuthorizationHeader(String header) {
         if(header == null) {
