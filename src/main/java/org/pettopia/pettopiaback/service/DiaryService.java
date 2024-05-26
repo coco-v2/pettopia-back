@@ -151,8 +151,8 @@ public class DiaryService {
         Diary diary = diaryRepository.findById(diaryPk)
                 .orElseThrow(() -> new NotFoundException("다이어리 정보가 없습니다."));
 
-        diary.updateInfo(diaryRequest.getMealCnt(), diary.getSnackCnt(), diary.getWalkCnt()
-                , diary.getConditionOfDefecation(), diaryRequest.getDefecationText(), diaryRequest.getEtc());
+        diary.updateInfo(diaryRequest.getMealCnt(), diaryRequest.getSnackCnt(), diaryRequest.getWalkCnt()
+                , diaryRequest.getConditionOfDefecation(), diaryRequest.getDefecationText(), diaryRequest.getEtc());
 
         // 기존 DiaryMedicine 정보 업데이트
         List<DiaryMedicine> existingDiaryMedicines = diaryMedicineRepository.findByDiary(diary);
