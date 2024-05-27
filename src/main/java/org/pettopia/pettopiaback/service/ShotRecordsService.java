@@ -30,7 +30,7 @@ public class ShotRecordsService {
         Pet findPet = petRepository.findById(addShotRecordsRequest.getPetPk())
                 .orElseThrow(() -> new NotFoundException("반려동물 정보가 없습니다"));
 
-        ShotRecords shotRecords = ShotRecords.makeShotRecord(findPet, addShotRecordsRequest.getType(), addShotRecordsRequest.getNum(), addShotRecordsRequest.getAge());
+        ShotRecords shotRecords = ShotRecords.makeShotRecord(findPet, addShotRecordsRequest.getCreateAt(), addShotRecordsRequest.getType(), addShotRecordsRequest.getNum(), addShotRecordsRequest.getAge());
         return shotRecordsRepository.save(shotRecords);
     }
 
@@ -50,6 +50,7 @@ public class ShotRecordsService {
                         .type(request.getType())
                         .num(request.getNum())
                         .age(request.getAge())
+                        .createAt(request.getCreateAt())
                         .build();
         return response;
     }
@@ -73,7 +74,8 @@ public class ShotRecordsService {
                             shotRecords.getPet().getDogNm(),
                             shotRecords.getType(),
                             shotRecords.getNum(),
-                            shotRecords.getAge()
+                            shotRecords.getAge(),
+                            shotRecords.getCreateAt()
                     );
             ShotRecordsDTO.ShotRecordsListResponse response = getShotRecords(request);
             ShotRecordsDTO.ShotRecordsListResponse shotRecordDTO =
@@ -84,6 +86,7 @@ public class ShotRecordsService {
                             .type(response.getType())
                             .num(response.getNum())
                             .age(response.getAge())
+                            .createAt(response.getCreateAt())
                             .build();
             shotRecordsDTOS.add(shotRecordDTO);
         }
