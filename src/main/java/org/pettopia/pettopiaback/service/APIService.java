@@ -278,14 +278,12 @@ public class APIService {
 
     }
 
-    public Map<String,Object> getPet (String dogRegNumber, String rfid, String ownerNm, String ownerBirth )throws Exception{
+    public Map<String,Object> getPet (String dogRegNumber, String ownerNm )throws Exception{
         String key = "="+petKey;
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1543061/animalInfoSrvc/animalInfo"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + key); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("dog_reg_no","UTF-8") + "=" + URLEncoder.encode(dogRegNumber, "UTF-8")); /*동물등록번호 또는 RFID코드 필수*/
-        urlBuilder.append("&" + URLEncoder.encode("rfid_cd","UTF-8") + "=" + URLEncoder.encode(rfid, "UTF-8")); /*동물등록번호 또는 RFID코드 필수*/
         urlBuilder.append("&" + URLEncoder.encode("owner_nm","UTF-8") + "=" + URLEncoder.encode(ownerNm, "UTF-8")); /*소유자 성명 또는 생년월일 필수*/
-        urlBuilder.append("&" + URLEncoder.encode("owner_birth","UTF-8") + "=" + URLEncoder.encode(ownerBirth, "UTF-8")); /*소유자 성명 또는 생년월일 필수*/
         urlBuilder.append("&" + URLEncoder.encode("_type","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml(기본값) 또는 json*/
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
