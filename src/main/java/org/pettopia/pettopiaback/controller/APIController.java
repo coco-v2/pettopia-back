@@ -52,10 +52,10 @@ public class APIController {
     """)
     @GetMapping("/map/pet")
     public ResponseEntity<Map<String,Object>> getPet(
-            @RequestParam("dogRegNo") String dogRegNo, @RequestParam("rfidcd") String rfidcd, @RequestParam("ownernm") String ownernm, @RequestParam("ownerbirth") String ownerBirth
+            @RequestParam("dogRegNo") String dogRegNo,  @RequestParam("ownernm") String ownernm
     ) throws Exception
     {
-        Map<String,Object> map = apiService.getPet(dogRegNo, rfidcd, ownernm, ownerBirth);
+        Map<String,Object> map = apiService.getPet(dogRegNo,  ownernm);
         return ResponseEntity.ok(map);
     }
 }
