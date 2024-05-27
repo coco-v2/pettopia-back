@@ -320,8 +320,8 @@ public class APIService {
                 map.put("rfidCd", item.getString("rfidCd"));
                 map.put("dogNm", item.getString("dogNm"));
                 map.put("sexNm", item.getString("sexNm")=="암컷"?false:true);
-                map.put("kindNm", item.getString("kindNm")=="미중성"?false:true);
-                map.put("neuterYn", item.getString("neuterYn"));
+                map.put("kindNm", item.getString("kindNm"));
+                map.put("neuterYn", item.getString("neuterYn")=="미중성"?false:true);
             }
         }
         return map;
