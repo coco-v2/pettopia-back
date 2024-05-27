@@ -9,5 +9,4 @@ import java.util.List;
 public interface DiaryMedicineRepository extends JpaRepository<DiaryMedicine, Long> {
     List<DiaryMedicine> findByDiary(Diary diary);
 
-    void deleteByDiary(Diary diary);
 }

@@ -30,5 +30,12 @@ public class APIController {
         return ResponseEntity.ok(hospitalList);
     }
 
+    @GetMapping("/map/beauty/{address}")
+    public ResponseEntity  <List<APIDTO.MapListResponse>> getBeautyShopList(@PathVariable String address) throws Exception {
+
+        List<APIDTO.MapListResponse> beautyShopList = apiService.getBeautyShopMapList(address);
+        return ResponseEntity.ok(beautyShopList);
+    }
+
 }
 
