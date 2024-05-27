@@ -1,6 +1,11 @@
 package org.pettopia.pettopiaback.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public class APIDTO {
 
@@ -27,6 +32,7 @@ public class APIDTO {
         private String address;
         private String phoneNumber;
     }
+
 
 
 
