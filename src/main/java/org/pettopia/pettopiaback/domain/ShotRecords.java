@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,9 +28,8 @@ public class ShotRecords {
     private Pet pet;
 
     @NotNull
-    @CreationTimestamp
     @Column(name = "create_at")
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDate createAt;
 
     private String type;
 
@@ -37,8 +37,9 @@ public class ShotRecords {
 
     private Integer age;
 
-    public static ShotRecords makeShotRecord (Pet pet, String type, Integer num, Integer age){
+    public static ShotRecords makeShotRecord (Pet pet, LocalDate createAt, String type, Integer num, Integer age){
         ShotRecords shotRecords = new ShotRecords();
+        shotRecords.createAt = createAt;
         shotRecords.pet =pet;
         shotRecords.type=type;
         shotRecords.num = num;
