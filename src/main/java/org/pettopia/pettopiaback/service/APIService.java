@@ -225,24 +225,10 @@ public class APIService {
         return apiDTOS;
     }
 
-    public Integer getWeather(String nx, String ny) throws Exception{
-        String key = "="+weatherKey;
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter baseDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        DateTimeFormatter baseTimeFormatter = DateTimeFormatter.ofPattern("HH");
-        String baseDate = now.format(baseDateFormatter);
-        String baseTime = now.format(baseTimeFormatter)+"00";
-        int pty =0;
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + key); /*Service Key*/
-        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("1000", "UTF-8")); /*한 페이지 결과 수*/
-        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8")); /*‘21년 6월 28일 발표*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8")); /*06시 발표(정시단위) */
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); /*예보지점의 X 좌표값*/
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); /*예보지점의 Y 좌표값*/
-        URL url = new URL(urlBuilder.toString());
+    public Map<String,String> getWeather(String lat, String lon) throws Exception{
+        String urlStr = String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=%s", lat, lon, weatherKey);
+
+        URL url = new URL(urlStr.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
@@ -261,21 +247,23 @@ public class APIService {
         rd.close();
         conn.disconnect();
         System.out.println(sb.toString());
-        JSONObject jsonResponseObj = new JSONObject(sb.toString());
-        JSONObject responseBody = jsonResponseObj.getJSONObject("response").getJSONObject("body");
-        JSONArray itemsArray = responseBody.getJSONObject("items").getJSONArray("item");
+        JSONObject jsonObject = new JSONObject(sb.toString());
 
-        for (int i = 0; i < itemsArray.length(); i++) {
-            JSONObject item = itemsArray.getJSONObject(i);
-            if (item.getString("category").equals("PTY")) {
-                String ptyValue = item.getString("obsrValue");
-                System.out.println("PTY value: " + ptyValue);
-                pty= Integer.parseInt(ptyValue);
-                break; // PTY 값만 필요하므로 찾은 후 루프 종료
-            }
-        }
-        return pty;
+        // weather 배열에서 첫 번째 객체 가져오기
+        JSONArray weatherArray = jsonObject.getJSONArray("weather");
+        JSONObject weather = weatherArray.getJSONObject(0);
 
+        // main과 icon 값 가져오기
+        String main = weather.getString("main");
+        String icon = weather.getString("icon");
+
+        // 결과 출력
+        System.out.println("Main: " + main);
+        System.out.println("Icon: " + icon);
+        Map<String,String> map = new HashMap<>();
+        map.put("main", main);
+        map.put("icon",icon);
+        return map;
     }
 
     public Map<String,Object> getPet (String dogRegNumber, String ownerNm )throws Exception{

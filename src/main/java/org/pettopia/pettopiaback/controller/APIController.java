@@ -39,10 +39,9 @@ public class APIController {
     [강수형태]0:없음, 1:비, 2:비/눈, 3:눈, 4:소나기
     """)
     @GetMapping("/map/weather")
-    public ResponseEntity<Map<String, Integer>> getWeather(@RequestParam("nx") String nx, @RequestParam("ny") String ny) throws Exception {
-        int weather = apiService.getWeather(nx, ny);
-        Map<String, Integer> map = new HashMap<>();
-        map.put("pty", weather);
+    public ResponseEntity<Map<String, String>> getWeather(@RequestParam("lat") String lat, @RequestParam("lon") String lon) throws Exception {
+        Map<String,String> map = apiService.getWeather(lat, lon);
+
         return ResponseEntity.ok(map);
     }
     @Operation(summary = "반려동물등록증", description = """
