@@ -20,6 +20,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/v1")
 public class APIController {
+
     private final APIService apiService;
 
     @GetMapping("/map/hospital/{address}")
@@ -41,9 +42,9 @@ public class APIController {
     @GetMapping("/map/weather")
     public ResponseEntity<Map<String, String>> getWeather(@RequestParam("lat") String lat, @RequestParam("lon") String lon) throws Exception {
         Map<String,String> map = apiService.getWeather(lat, lon);
-
         return ResponseEntity.ok(map);
     }
+
     @Operation(summary = "반려동물등록증", description = """
     동물등록번호는 15자리
     생년월일 020415
