@@ -7,10 +7,7 @@ import org.pettopia.pettopiaback.dto.APIDTO;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.service.APIService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +18,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/v1")
 public class APIController {
+
     private final APIService apiService;
 
     @GetMapping("/map/hospital/{address}")
@@ -36,6 +34,12 @@ public class APIController {
         List<APIDTO.MapListResponse> beautyShopList = apiService.getBeautyShopMapList(address);
         return ResponseEntity.ok(beautyShopList);
     }
+
+//    @GetMapping("/search/beauty/csv")
+//    public List<String[]> searchBeautyShopList(@RequestParam String name) {
+//        return apiService.findAddressesContainingName(name);
+//    }
+
 
 }
 
