@@ -42,6 +42,12 @@ public class APIService {
     String beautyKey;
 
     private static final String CSV_FILE_PATH = "/fulldata_02_03_11_P.csv";
+    @Value("${API.weather-key}")
+    String weatherKey;
+
+    @Value("${API.pet-key}")
+    String petKey;
+
 
     public List<String[]> findAddressesContainingName(String name) {
         List<String[]> result = new ArrayList<>();
@@ -77,7 +83,6 @@ public class APIService {
 
         return result;
     }
-
 
 
     public List<Map<String, Object>> getHospitalList(String country) throws Exception {
@@ -260,6 +265,98 @@ public class APIService {
         return apiDTOS;
     }
 
+    public Map<String,String> getWeather(String lat, String lon) throws Exception{
+        String urlStr = String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=%s", lat, lon, weatherKey);
+
+        URL url = new URL(urlStr.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        System.out.println("Response code: " + conn.getResponseCode());
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        System.out.println(sb.toString());
+        JSONObject jsonObject = new JSONObject(sb.toString());
+
+        // weather 배열에서 첫 번째 객체 가져오기
+        JSONArray weatherArray = jsonObject.getJSONArray("weather");
+        JSONObject weather = weatherArray.getJSONObject(0);
+
+        // main과 icon 값 가져오기
+        String main = weather.getString("main");
+        String icon = weather.getString("icon");
+
+        // 결과 출력
+        System.out.println("Main: " + main);
+        System.out.println("Icon: " + icon);
+        Map<String,String> map = new HashMap<>();
+        map.put("main", main);
+        map.put("icon",icon);
+        return map;
+    }
+
+    public Map<String,Object> getPet (String dogRegNumber, String ownerNm )throws Exception{
+        String key = "="+petKey;
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1543061/animalInfoSrvc/animalInfo"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + key); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("dog_reg_no","UTF-8") + "=" + URLEncoder.encode(dogRegNumber, "UTF-8")); /*동물등록번호 또는 RFID코드 필수*/
+        urlBuilder.append("&" + URLEncoder.encode("owner_nm","UTF-8") + "=" + URLEncoder.encode(ownerNm, "UTF-8")); /*소유자 성명 또는 생년월일 필수*/
+        urlBuilder.append("&" + URLEncoder.encode("_type","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml(기본값) 또는 json*/
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        System.out.println("Response code: " + conn.getResponseCode());
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        System.out.println(sb.toString());
+        JSONObject jsonResponse = new JSONObject(sb.toString());
+        JSONObject response = jsonResponse.getJSONObject("response");
+
+        Map<String, Object> map = new HashMap<>();
+
+        if (response.has("body") && !response.isNull("body")) {
+            JSONObject body = response.getJSONObject("body");
+
+            if (body.has("item") && !body.isNull("item")) {
+                JSONObject item = body.getJSONObject("item");
+
+                // Extract the required fields and put them in the map
+                map.put("dogRegNo", item.getString("dogRegNo"));
+                map.put("rfidCd", item.getString("rfidCd"));
+                map.put("dogNm", item.getString("dogNm"));
+                map.put("sexNm", item.getString("sexNm")=="암컷"?false:true);
+                map.put("kindNm", item.getString("kindNm"));
+                map.put("neuterYn", item.getString("neuterYn")=="미중성"?false:true);
+            }
+        }
+        return map;
+
+    }
+
+
     public List<Map<String, Object>> getBeautyShopList(String region) throws Exception {
         int totalSize = getBeautyApiSize();
 
@@ -402,6 +499,7 @@ public class APIService {
         log.info("totalSize2 : {}", totalSize);
         return totalSize;
     }
+
 
 
 }

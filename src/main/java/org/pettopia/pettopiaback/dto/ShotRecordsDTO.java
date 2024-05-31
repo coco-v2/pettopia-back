@@ -3,6 +3,9 @@ package org.pettopia.pettopiaback.dto;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
 
 
 public class ShotRecordsDTO {
@@ -13,7 +16,8 @@ public class ShotRecordsDTO {
     public static class AddShotRecordsRequest{
         @NotNull(message = "반려동물정보가 null이면 안됩니다.")
         private Long petPk;
-
+        @NotNull(message = "createAt이 null이면 안됩니다")
+        private LocalDate createAt;
         @NotNull(message = "접종 종류가 null이면 안됩니다")
         private String type;
 
@@ -36,12 +40,14 @@ public class ShotRecordsDTO {
         private String type;
         private int num;
         private int age;
-        public static ShotRecordListsRequest Records(Long pk, Long petPk,String petName,String type, int num, int age){
-            return new ShotRecordListsRequest(pk, petPk,petName,type,num,age);
+        private LocalDate createAt;
+        public static ShotRecordListsRequest Records(Long pk, Long petPk, String petName, String type, int num, int age, LocalDate createAt){
+            return new ShotRecordListsRequest(pk, petPk,petName,type,num,age,createAt);
         }
 
 
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -54,6 +60,7 @@ public class ShotRecordsDTO {
         private String type;
         private int num;
         private int age;
+        private LocalDate createAt;
     }
 
 }

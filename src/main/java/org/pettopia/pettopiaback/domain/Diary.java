@@ -54,7 +54,6 @@ public class Diary {
     private LocalDateTime updateAt = LocalDateTime.now();
 
     @NotNull
-    @CreationTimestamp
     @Column(name = "calendar_date")
     private LocalDate calendarDate;
 
