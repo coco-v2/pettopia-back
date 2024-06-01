@@ -97,4 +97,15 @@ public class JwtUtils {
         long remainMs = expDate.getTime() - System.currentTimeMillis();
         return remainMs / (1000 * 60);
     }
+
+    // 만료된 토큰에서 클레임을 가져오는 메서드
+    public static Map<String, Object> getClaimsWithoutValidation(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }

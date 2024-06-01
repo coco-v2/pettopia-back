@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.jwt.exception.CustomJwtException;
 import org.pettopia.pettopiaback.jwt.utils.JwtConstants;
 import org.pettopia.pettopiaback.jwt.utils.JwtUtils;
+import org.pettopia.pettopiaback.service.JwtService;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/jwt")
 public class JwtController {
+
+    private final JwtService jwtService;
+
+
+    @RequestMapping("/acess")
+    public Map<String, Object> refresh(@RequestHeader("Authorization") String authHeader) {
+        log.info("Access Token = {}", authHeader);
+        return jwtService.validateAccessToken(authHeader);
+    }
 
     @RequestMapping("/refresh")
     public Map<String, Object> refresh(@RequestHeader("Authorization") String authHeader, String refreshToken) {

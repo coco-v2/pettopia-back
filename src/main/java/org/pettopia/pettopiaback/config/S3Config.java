@@ -1,4 +1,4 @@
-package org.pettopia.pettopiaback.security.config;
+package org.pettopia.pettopiaback.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
