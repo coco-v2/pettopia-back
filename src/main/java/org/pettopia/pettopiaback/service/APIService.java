@@ -93,7 +93,6 @@ public class APIService {
                             ,"휴업시작일자","휴업종료일자","재개업일자","소재지전화","소재지면적","소재지우편번호","소재지전체주소","도로명전체주소","도로명우편번호","사업장명","최종수정시점","데이터갱신구분"
                             ,"데이터갱신일자","업태구분명","좌표정보(x)","좌표정보(y)","업무구분명","상세업무구분명","권리주체일련번호","총직원수")
                     .withIgnoreHeaderCase()
-//                    .withQuote(null)
                     .withTrim();
 
             try (CSVParser csvParser = new CSVParser(new StringReader(String.join("\n", lines)), format)) {
@@ -104,17 +103,10 @@ public class APIService {
 
                     String roadNameAddress = record.get("도로명전체주소");
                     if (roadNameAddress != null && roadNameAddress.contains(request)) {
-                        System.out.println("도로명전체주소:" + roadNameAddress);
-
                         int asteriskIndex = roadNameAddress.indexOf('*');
                         String address = (asteriskIndex != -1) ? roadNameAddress.substring(0, asteriskIndex) : roadNameAddress;
-
-                        System.out.println("수정주소" + address);
-
                         String name = record.get("사업장명");
-                        System.out.println("businessName:"+name);
                         String phoneNumber = record.get("소재지전화");
-                        System.out.println("phoneNum:"+phoneNumber);
                         result.add(APIDTO.MapListResponse.builder()
                                 .name(name)
                                 .address(address)

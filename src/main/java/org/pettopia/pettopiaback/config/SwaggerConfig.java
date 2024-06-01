@@ -2,6 +2,7 @@ package org.pettopia.pettopiaback.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -11,54 +12,43 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-//@Configuration
-//@OpenAPIDefinition(
-//        info = @Info(
-//                title = "Pettopia 백엔드 API 명세서",
-//                description = """
-//                  Pettopia 백엔드 API 명세입니다.<br>
-//                  <h2>401: 만료된 토큰 or 유효하지 않은 토큰 사용</h2>
-//                  <h2>500: 서버에러</h2>
-//                  """,
-//                version = "v1"
-//        ),
-//        servers = {
-//                //@Server(url = "http://:8080", description = "AWS 서버"),
-//                @Server(url = "http://localhost:8080", description = "Local 테스트용 서버")
-//        }
-//)
 @OpenAPIDefinition(
-        info = @Info(title = "Pettopia", version = "v1"))
+        info = @Info(title = "Pettopia 백엔드 API 명세서",
+                description = """
+                  Pettopia 백엔드 API 명세입니다.<br>
+                  <h2>401: 만료된 토큰 or 유효하지 않은 토큰 사용</h2>
+                  <h2>500: 서버에러</h2>
+                  """,
+                version = "v1"
+        ),
+                servers = {
+                @Server(url = "http://43.200.68.44:8080", description = "AWS 배포 서버"),
+                @Server(url = "http://localhost:8080", description = "Local 테스트용 서버")
+        }
+)
 @RequiredArgsConstructor
 @Configuration
 public class SwaggerConfig {
 
-//    @Bean
-//    public OpenAPI openAPI() {
-//        SecurityScheme securityScheme = new SecurityScheme()
-//                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
-//                .in(SecurityScheme.In.HEADER).name("Authorization");
-//        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
-//
-//        return new OpenAPI()
-//                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
-//                .security(Collections.singletonList(securityRequirement));
-//    }
+    private static final String BEARER_TOKEN_PREFIX = "Bearer";
 
     @Bean
     public OpenAPI api() {
-        SecurityScheme apiKey = new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY)
-                .in(SecurityScheme.In.HEADER)
-                .name("Authorization");
-
+        String securityJwtName = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList("Bearer Token");
+                .addList(securityJwtName);
+
+        Components components = new Components()
+                .addSecuritySchemes(securityJwtName, new SecurityScheme()
+                        .name(securityJwtName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme(BEARER_TOKEN_PREFIX)
+                        .bearerFormat(securityJwtName)
+                );
 
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("Bearer Token", apiKey))
-                .addSecurityItem(securityRequirement);
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
 
 
