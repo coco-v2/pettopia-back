@@ -49,7 +49,7 @@ public class APIController {
         return ResponseEntity.ok(map);
     }
 
-    @GetMapping("/search/beauty/csv/{address}")
+    @GetMapping("/map/beauty/{address}")
     public ResponseEntity <List<APIDTO.MapListResponse>> searchBeautyShopList(@PathVariable String address) throws Exception {
         List<APIDTO.MapListResponse> beautyShopList = apiService.getBeautyShopMapListAll(address);
         return ResponseEntity.ok(beautyShopList);
