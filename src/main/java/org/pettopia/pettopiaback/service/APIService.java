@@ -1,5 +1,6 @@
 package org.pettopia.pettopiaback.service;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -7,8 +8,10 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.APIDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -18,6 +21,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,46 +47,105 @@ public class APIService {
     String beautyKey;
 
     private static final String CSV_FILE_PATH = "/fulldata_02_03_11_P.csv";
+
+//    private static final String CSV_FILE_PATH = "C:/Users/yeseo/Desktop/fulldata_02_03_11_P.csv";
+
+
     @Value("${API.weather-key}")
     String weatherKey;
 
     @Value("${API.pet-key}")
     String petKey;
 
+    public List<APIDTO.MapListResponse> getBeautyShopMapListAll(String address) throws Exception {
+        List<APIDTO.MapListResponse> beautyShopList = new ArrayList<>();
 
-    public List<String[]> findAddressesContainingName(String name) {
-        List<String[]> result = new ArrayList<>();
+        beautyShopList.addAll(getBeautyShopList(address));
+
+        List<APIDTO.MapListResponse> beautyShopListFromCSV = getBeautyShopMapListByCSV(address);
+
+        for (APIDTO.MapListResponse response : beautyShopListFromCSV) {
+            boolean isDuplicate = false;
+            for (APIDTO.MapListResponse existingResponse : beautyShopList) {
+                if (existingResponse.getName().equals(response.getName()) &&
+                        existingResponse.getAddress().equals(response.getAddress()) &&
+                        existingResponse.getPhoneNumber().equals(response.getPhoneNumber())) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            if (!isDuplicate) {
+                beautyShopList.add(response);
+            }
+        }
+        return beautyShopList;
+    }
+
+
+    public List<APIDTO.MapListResponse> getBeautyShopMapListByCSV(String request) {
+        List<APIDTO.MapListResponse> result = new ArrayList<>();
 
         try (Reader reader = new InputStreamReader(getClass().getResourceAsStream(CSV_FILE_PATH), StandardCharsets.UTF_8);
              BufferedReader br = new BufferedReader(reader)) {
 
-            // Skip BOM if present
             br.mark(1);
             if (br.read() != 0xFEFF) {
                 br.reset();
             }
 
-            try (CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withIgnoreHeaderCase()
-                    .withTrim()
-                    .parse(br)) {
+            List<String> lines = br.lines().collect(Collectors.toList());
+            List<String> cleanedLines = lines.stream()
+                    .map(this::cleanLine)
+                    .collect(Collectors.toList());
 
-            for (CSVRecord record : csvParser) {
-                String roadNameAddress = record.get("도로명전체주소");
-                if (roadNameAddress != null && roadNameAddress.contains(name)) {
-                    String businessName = record.get("사업장명");
-                    String phoneNumber = record.get("소재지전화");
-                    result.add(new String[]{roadNameAddress, businessName, phoneNumber});
+            System.out.println("cleanedLines:"+cleanedLines);
+
+            // CSV 형식 설정
+            CSVFormat format = CSVFormat.DEFAULT
+                    .withHeader("번호","개방서비스명","개방서비스아이디","개방자치단체코드","관리번호","인허가일자","인허가취소일자","영업상태구분코드","영업상태명","상세영업상태코드","상세영업상태명","폐업일자"
+                            ,"휴업시작일자","휴업종료일자","재개업일자","소재지전화","소재지면적","소재지우편번호","소재지전체주소","도로명전체주소","도로명우편번호","사업장명","최종수정시점","데이터갱신구분"
+                            ,"데이터갱신일자","업태구분명","좌표정보(x)","좌표정보(y)","업무구분명","상세업무구분명","권리주체일련번호","총직원수")
+                    .withIgnoreHeaderCase()
+//                    .withQuote(null)
+                    .withTrim();
+
+            try (CSVParser csvParser = new CSVParser(new StringReader(String.join("\n", cleanedLines)), format)) {
+                for (CSVRecord record : csvParser) {
+                    if (record.size() < 20) {
+                        continue;
+                    }
+
+                    String roadNameAddress = record.get("도로명전체주소");
+                    if (roadNameAddress != null && roadNameAddress.contains(request)) {
+                        System.out.println("도로명전체주소:" + roadNameAddress);
+
+                        int asteriskIndex = roadNameAddress.indexOf('*');
+                        String address = (asteriskIndex != -1) ? roadNameAddress.substring(0, asteriskIndex) : roadNameAddress;
+
+                        System.out.println("수정주소" + address);
+
+                        String name = record.get("사업장명");
+                        System.out.println("businessName:"+name);
+                        String phoneNumber = record.get("소재지전화");
+                        System.out.println("phoneNum:"+phoneNumber);
+                        result.add(APIDTO.MapListResponse.builder()
+                                .name(name)
+                                .address(address)
+                                .phoneNumber(phoneNumber)
+                                .build());
+                    }
                 }
             }
-        }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return result;
+    }
+
+    private String cleanLine(String line) {
+        return line;
     }
 
 
@@ -247,12 +311,29 @@ public class APIService {
         return response;
     }
 
+//    public List<APIDTO.MapListResponse> getBeautyShopMapList(String address) throws Exception {
+//        List<Map<String, Object>> mapList = getBeautyShopList(address);
+//        List<APIDTO.MapListResponse> apiDTOS = new ArrayList<>();
+//
+//        for (Map<String, Object> map : mapList) {
+//            APIDTO.MapListRequest request = APIDTO.MapListRequest.maps((String) map.get("name"), (String) map.get("address"), (String) map.get("phoneNumber"));
+//            APIDTO.MapListResponse response = getMapResponse(request);
+//            APIDTO.MapListResponse mapDTO =
+//                    APIDTO.MapListResponse.builder()
+//                            .name(response.getName())
+//                            .address(response.getAddress())
+//                            .phoneNumber(response.getPhoneNumber())
+//                            .build();
+//            apiDTOS.add(mapDTO);
+//        }
+//        return apiDTOS;
+//    }
     public List<APIDTO.MapListResponse> getBeautyShopMapList(String address) throws Exception {
-        List<Map<String, Object>> mapList = getBeautyShopList(address);
+        List<APIDTO.MapListResponse> mapList = getBeautyShopList(address);
         List<APIDTO.MapListResponse> apiDTOS = new ArrayList<>();
 
-        for (Map<String, Object> map : mapList) {
-            APIDTO.MapListRequest request = APIDTO.MapListRequest.maps((String) map.get("name"), (String) map.get("address"), (String) map.get("phoneNumber"));
+        for (APIDTO.MapListResponse map : mapList) {
+            APIDTO.MapListRequest request = APIDTO.MapListRequest.maps(map.getName(), map.getAddress(), map.getPhoneNumber());
             APIDTO.MapListResponse response = getMapResponse(request);
             APIDTO.MapListResponse mapDTO =
                     APIDTO.MapListResponse.builder()
@@ -262,6 +343,7 @@ public class APIService {
                             .build();
             apiDTOS.add(mapDTO);
         }
+
         return apiDTOS;
     }
 
@@ -357,16 +439,115 @@ public class APIService {
     }
 
 
-    public List<Map<String, Object>> getBeautyShopList(String region) throws Exception {
+//    public List<Map<String, Object>> getBeautyShopList(String region) throws Exception {
+//        int totalSize = getBeautyApiSize();
+//
+//        List<Map<String, Object>> resultMap= new ArrayList<>();
+//        int startIndex = 1;
+//        int finalIndex =1;
+//        if(500 < totalSize){
+//            finalIndex = 500;
+//        }
+//        else{
+//            finalIndex = totalSize;
+//        }
+//        System.out.println("totalSize:" + totalSize);
+//        System.out.println("startIndex:" + startIndex);
+//        System.out.println("finalIndex" + finalIndex);
+//
+//        while (startIndex < totalSize) {
+//            StringBuilder urlBuilder = new StringBuilder("http://www.localdata.go.kr/platform/rest/TO0/openDataApi");
+//            urlBuilder.append("?authKey=" + URLEncoder.encode(beautyKey, "UTF-8"));
+//            urlBuilder.append("&opnSvcId=" + URLEncoder.encode("02_03_11_P", "UTF-8"));
+//            urlBuilder.append("&pageIndex=" + URLEncoder.encode(String.valueOf(startIndex), "UTF-8"));
+//            urlBuilder.append("&pageSize=" + URLEncoder.encode(String.valueOf(finalIndex), "UTF-8"));
+//
+//            URL url = new URL(urlBuilder.toString());
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setRequestMethod("GET");
+//            conn.setRequestProperty("Content-type", "application/xml");
+//
+//            BufferedReader rd;
+//            if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+//                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            } else {
+//                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+//            }
+//
+//            StringBuilder sb = new StringBuilder();
+//            String line;
+//            while ((line = rd.readLine()) != null) {
+//                sb.append(line);
+//            }
+//
+//            rd.close();
+//            conn.disconnect();
+//
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder builder = factory.newDocumentBuilder();
+//            Document doc = builder.parse(new InputSource(new StringReader(sb.toString())));
+//
+//            NodeList rows = doc.getElementsByTagName("row");
+//            log.info("row:{}", rows);
+//
+//            for (int i = 0; i < rows.getLength(); i++) {
+//                NodeList children = rows.item(i).getChildNodes();
+//                Map<String, Object> itemMap = new HashMap<>();
+//                for (int j = 0; j < children.getLength(); j++) {
+//                    String nodeName = children.item(j).getNodeName();
+//                    String nodeValue = children.item(j).getTextContent();
+//                    itemMap.put(nodeName, nodeValue);
+//                }
+//                String tradeState = (String) itemMap.get("trdStateGbn");
+//                log.info("tradeState: {}", tradeState);
+//
+//                String address = (String) itemMap.get("rdnWhlAddr");
+//                log.info("address: {}", address);
+//
+//                Map<String, Object> itemValue = new HashMap<>();
+//
+//                // 주소 정리
+//                if (address.contains(",")) {
+//                    address = address.split(",")[0].trim();
+//                }
+//                if (address.contains("(")) {
+//                    address = address.split("\\(")[0].trim();
+//                }
+//                if (address.contains("*")) {
+//                    address = address.split("\\*")[0].trim();
+//                }
+//
+//                itemValue.put("address", address);
+//                itemValue.put("name", (String) itemMap.get("bplcNm"));
+//                itemValue.put("phoneNumber", itemMap.get("siteTel"));
+//
+//                if ("01".equals(tradeState) && address.contains(region)) {
+//                    resultMap.add(itemValue);
+//                }
+//                startIndex = finalIndex + 1;
+//                if(finalIndex + 1000 < totalSize){
+//                    finalIndex = finalIndex + 1000;
+//                }
+//                else{
+//                    finalIndex = totalSize;
+//                }
+//
+//            }
+//
+//        }
+//        // Map 데이터 출력
+//        System.out.println("Mapped data: " + resultMap);
+//        return resultMap;
+//    }
+    public List<APIDTO.MapListResponse> getBeautyShopList(String region) throws Exception {
         int totalSize = getBeautyApiSize();
 
-        List<Map<String, Object>> resultMap= new ArrayList<>();
+        List<APIDTO.MapListResponse> resultMap = new ArrayList<>();
         int startIndex = 1;
-        int finalIndex =1;
-        if(500 < totalSize){
+        int finalIndex = 1;
+        if (500 < totalSize) {
             finalIndex = 500;
-        }
-        else{
+        } else {
             finalIndex = totalSize;
         }
         System.out.println("totalSize:" + totalSize);
@@ -440,13 +621,17 @@ public class APIService {
                 itemValue.put("phoneNumber", itemMap.get("siteTel"));
 
                 if ("01".equals(tradeState) && address.contains(region)) {
-                    resultMap.add(itemValue);
+                    // Map 형식의 데이터를 APIDTO.MapListResponse 형식으로 변환하여 추가합니다.
+                    APIDTO.MapListResponse mapResponse = new APIDTO.MapListResponse();
+                    mapResponse.setName((String) itemMap.get("bplcNm"));
+                    mapResponse.setAddress(address);
+                    mapResponse.setPhoneNumber((String) itemMap.get("siteTel"));
+                    resultMap.add(mapResponse);
                 }
                 startIndex = finalIndex + 1;
-                if(finalIndex + 1000 < totalSize){
+                if (finalIndex + 1000 < totalSize) {
                     finalIndex = finalIndex + 1000;
-                }
-                else{
+                } else {
                     finalIndex = totalSize;
                 }
 
@@ -457,6 +642,7 @@ public class APIService {
         System.out.println("Mapped data: " + resultMap);
         return resultMap;
     }
+
 
 
     public int getBeautyApiSize() throws Exception {
@@ -499,6 +685,10 @@ public class APIService {
         log.info("totalSize2 : {}", totalSize);
         return totalSize;
     }
+
+
+
+
 
 
 
