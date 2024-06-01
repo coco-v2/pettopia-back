@@ -117,4 +117,29 @@ public class DiaryDTO {
 
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DiaryDateResponse{
+        private Long diaryPk;
+        private Integer mealCont;
+
+        private Integer snackCnt;
+
+        private Integer walkCnt;
+
+        private ConditionOfDefecation conditionOfDefecation;
+
+        private String defecationText;
+
+        private String etc;
+
+        private MedicineDTO.ResponseMedicineList medicineList;
+
+        private String calendarDate;
+
+
+
+    }
+
 }

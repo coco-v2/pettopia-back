@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.List;
 
@@ -53,14 +56,26 @@ public class DiaryController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "다이어리 리스트 조회", description = """
+    @Operation(summary = "날짜로 다이어리 조회", description = """
       [로그인 필요]
             <br>""")
-    @GetMapping("/diary/list/{petPk}")
-    public ResponseEntity<List<DiaryDTO.DiaryListResponse>> getDiaryList(@AuthenticationPrincipal PrincipalDetail userDetails
-            , @PathVariable Long petPk){
-        List<DiaryDTO.DiaryListResponse> response = diaryService.getDiaryList(petPk);
+    @GetMapping("/diary/date/{petPk}")
+    public ResponseEntity<DiaryDTO.DiaryDateResponse> getDiaryByDate(@PathVariable Long petPk, @RequestParam LocalDate date) throws RuntimeException{
+        DiaryDTO.DiaryDateResponse response= diaryService.getDiaryByDate(petPk, date);
         return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "ai 펫 배변상태", description = """
+      [로그인 필요]
+            <br>""")
+    @GetMapping("/diary/defecation/{petPk}")
+    public ResponseEntity<Map<String,Object>> getAIdefecation(@PathVariable Long petPk){
+        String defecation = diaryService.getDefecation(petPk);
+        Map<String,Object> map = new HashMap<>();
+        map.put("defecation",defecation);
+        return ResponseEntity.ok(map);
+
     }
 
     @Operation(summary = "다이어리 삭제", description = """
