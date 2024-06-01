@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
                   """,
                 version = "v1"
         ),
-                servers = {
+        servers = {
                 @Server(url = "http://43.200.68.44:8080", description = "AWS 배포 서버"),
                 @Server(url = "http://localhost:8080", description = "Local 테스트용 서버")
         }

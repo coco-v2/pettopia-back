@@ -4,6 +4,7 @@ package org.pettopia.pettopiaback.security.config;
 import lombok.RequiredArgsConstructor;
 import org.pettopia.pettopiaback.jwt.filter.JwtVerifyFilter;
 import org.pettopia.pettopiaback.oauth2.service.OAuth2UserService;
+import org.pettopia.pettopiaback.repository.RedisRepository;
 import org.pettopia.pettopiaback.security.handler.CommonLoginFailHandler;
 import org.pettopia.pettopiaback.security.handler.CommonLoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final OAuth2UserService oAuth2UserService;
+    private final RedisRepository redisRepository;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -52,7 +54,7 @@ public class SecurityConfig {
 
     @Bean
     public CommonLoginSuccessHandler commonLoginSuccessHandler() {
-        return new CommonLoginSuccessHandler();
+        return new CommonLoginSuccessHandler(redisRepository);
     }
 
     @Bean
