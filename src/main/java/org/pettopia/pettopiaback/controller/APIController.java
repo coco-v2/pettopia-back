@@ -20,6 +20,7 @@ public class APIController {
 
     private final APIService apiService;
 
+
     @GetMapping("/map/hospital/{address}")
     public ResponseEntity  <List<APIDTO.MapListResponse>> getShotRecordsList(@PathVariable String address) throws Exception {
 
@@ -49,6 +50,7 @@ public class APIController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "미용실 찾기")
     @GetMapping("/map/beauty/{address}")
     public ResponseEntity <List<APIDTO.MapListResponse>> searchBeautyShopList(@PathVariable String address) throws Exception {
         List<APIDTO.MapListResponse> beautyShopList = apiService.getBeautyShopMapListAll(address);
