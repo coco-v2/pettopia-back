@@ -1,11 +1,8 @@
 package org.pettopia.pettopiaback.service;
 
 
-import org.pettopia.pettopiaback.domain.DiaryMedicine;
-import org.pettopia.pettopiaback.domain.Medicine;
+import org.pettopia.pettopiaback.domain.*;
 import org.pettopia.pettopiaback.dto.DiaryDTO;
-import org.pettopia.pettopiaback.domain.Diary;
-import org.pettopia.pettopiaback.domain.Pet;
 import org.pettopia.pettopiaback.dto.MedicineDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;
 
@@ -18,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.pettopia.pettopiaback.repository.DiaryRepository;
 import org.pettopia.pettopiaback.repository.PetRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +103,36 @@ public class DiaryService {
 
     }
 
+    public DiaryDTO.DiaryDateResponse getDiaryByDate(Long petPk, LocalDate date) throws RuntimeException{
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("펫 정보가 없습니다."));
+        Diary diary = diaryRepository.findByPetAndCalendarDate(pet, date);
+        List<DiaryMedicine> diaryMedicines = diaryMedicineRepository.findByDiary(diary);
+
+        List<MedicineDTO.RequestMedicine> requestMedicines = diaryMedicines.stream()
+                .map(diaryMedicine -> new MedicineDTO.RequestMedicine(
+                        diaryMedicine.getMedicine().getName(),
+                        Math.toIntExact(diaryMedicine.getMedicineCnt())))
+                .collect(Collectors.toList());
+
+        MedicineDTO.ResponseMedicineList responseMedicineList = MedicineDTO.ResponseMedicineList.builder()
+                .cnt(requestMedicines.size())
+                .list(requestMedicines)
+                .build();
+        return new DiaryDTO.DiaryDateResponse(
+                diary.getPk(),
+                diary.getMealCnt(),
+                diary.getSnackCnt(),
+                diary.getWalkCnt(),
+                diary.getConditionOfDefecation(),
+                diary.getDefecationText(),
+                diary.getEtc(),
+                responseMedicineList,
+                diary.formatDate(diary.getCalendarDate())
+        );
+
+    }
+
     public DiaryDTO.DiaryResponse getDiary(Long diaryPk) throws RuntimeException {
 
         Diary diary = diaryRepository.findById(diaryPk)
@@ -145,6 +173,30 @@ public class DiaryService {
         diaryRepository.delete(diary);
 
     }
+
+    public String getDefecation(Long petPk){
+        Pet pet = petRepository.findById(petPk)
+                .orElseThrow(() -> new NotFoundException("펫 정보가 없습니다."));
+        List<Diary> diaryByPet = diaryRepository.findByPet(pet);
+        List<Diary> diaryByNormal = diaryRepository.findByPetAndConditionOfDefecation(pet, ConditionOfDefecation.NORMAL);
+        List<Diary> diaryByProblem = diaryRepository.findByPetAndConditionOfDefecation(pet, ConditionOfDefecation.PROBLEM);
+        List<Diary> diaryByNo = diaryRepository.findByPetAndConditionOfDefecation(pet, ConditionOfDefecation.NO);
+
+        if(diaryByPet.size() == 0){
+            return "NORMAL";
+        }else{
+            int maxCount = Math.max(diaryByNormal.size(), Math.max(diaryByProblem.size(), diaryByNo.size()));
+
+            if (maxCount == diaryByNormal.size()) {
+                return "NORMAL";
+            } else if (maxCount == diaryByProblem.size()) {
+                return "PROBLEM";
+            } else {
+                return "NO";
+            }
+        }
+    }
+
 
     public DiaryDTO.DiaryResponse updateDiary(Long diaryPk, DiaryDTO.DiaryUpdateRequest diaryRequest) throws RuntimeException {
 
