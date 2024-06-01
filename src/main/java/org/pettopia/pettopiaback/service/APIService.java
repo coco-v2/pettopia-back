@@ -1,6 +1,5 @@
 package org.pettopia.pettopiaback.service;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -8,10 +7,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.APIDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -21,7 +18,6 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.awt.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -47,8 +43,6 @@ public class APIService {
     String beautyKey;
 
     private static final String CSV_FILE_PATH = "/fulldata_02_03_11_P.csv";
-
-//    private static final String CSV_FILE_PATH = "C:/Users/yeseo/Desktop/fulldata_02_03_11_P.csv";
 
 
     @Value("${API.weather-key}")
@@ -81,7 +75,6 @@ public class APIService {
         return beautyShopList;
     }
 
-
     public List<APIDTO.MapListResponse> getBeautyShopMapListByCSV(String request) {
         List<APIDTO.MapListResponse> result = new ArrayList<>();
 
@@ -94,13 +87,7 @@ public class APIService {
             }
 
             List<String> lines = br.lines().collect(Collectors.toList());
-            List<String> cleanedLines = lines.stream()
-                    .map(this::cleanLine)
-                    .collect(Collectors.toList());
 
-            System.out.println("cleanedLines:"+cleanedLines);
-
-            // CSV 형식 설정
             CSVFormat format = CSVFormat.DEFAULT
                     .withHeader("번호","개방서비스명","개방서비스아이디","개방자치단체코드","관리번호","인허가일자","인허가취소일자","영업상태구분코드","영업상태명","상세영업상태코드","상세영업상태명","폐업일자"
                             ,"휴업시작일자","휴업종료일자","재개업일자","소재지전화","소재지면적","소재지우편번호","소재지전체주소","도로명전체주소","도로명우편번호","사업장명","최종수정시점","데이터갱신구분"
@@ -109,7 +96,7 @@ public class APIService {
 //                    .withQuote(null)
                     .withTrim();
 
-            try (CSVParser csvParser = new CSVParser(new StringReader(String.join("\n", cleanedLines)), format)) {
+            try (CSVParser csvParser = new CSVParser(new StringReader(String.join("\n", lines)), format)) {
                 for (CSVRecord record : csvParser) {
                     if (record.size() < 20) {
                         continue;
@@ -142,10 +129,6 @@ public class APIService {
         }
 
         return result;
-    }
-
-    private String cleanLine(String line) {
-        return line;
     }
 
 
@@ -236,8 +219,6 @@ public class APIService {
 
           }
 
-
-
          }
          // Map 데이터 출력
          System.out.println("Mapped data: " + resultMap);
@@ -311,23 +292,6 @@ public class APIService {
         return response;
     }
 
-//    public List<APIDTO.MapListResponse> getBeautyShopMapList(String address) throws Exception {
-//        List<Map<String, Object>> mapList = getBeautyShopList(address);
-//        List<APIDTO.MapListResponse> apiDTOS = new ArrayList<>();
-//
-//        for (Map<String, Object> map : mapList) {
-//            APIDTO.MapListRequest request = APIDTO.MapListRequest.maps((String) map.get("name"), (String) map.get("address"), (String) map.get("phoneNumber"));
-//            APIDTO.MapListResponse response = getMapResponse(request);
-//            APIDTO.MapListResponse mapDTO =
-//                    APIDTO.MapListResponse.builder()
-//                            .name(response.getName())
-//                            .address(response.getAddress())
-//                            .phoneNumber(response.getPhoneNumber())
-//                            .build();
-//            apiDTOS.add(mapDTO);
-//        }
-//        return apiDTOS;
-//    }
     public List<APIDTO.MapListResponse> getBeautyShopMapList(String address) throws Exception {
         List<APIDTO.MapListResponse> mapList = getBeautyShopList(address);
         List<APIDTO.MapListResponse> apiDTOS = new ArrayList<>();
@@ -438,107 +402,6 @@ public class APIService {
 
     }
 
-
-//    public List<Map<String, Object>> getBeautyShopList(String region) throws Exception {
-//        int totalSize = getBeautyApiSize();
-//
-//        List<Map<String, Object>> resultMap= new ArrayList<>();
-//        int startIndex = 1;
-//        int finalIndex =1;
-//        if(500 < totalSize){
-//            finalIndex = 500;
-//        }
-//        else{
-//            finalIndex = totalSize;
-//        }
-//        System.out.println("totalSize:" + totalSize);
-//        System.out.println("startIndex:" + startIndex);
-//        System.out.println("finalIndex" + finalIndex);
-//
-//        while (startIndex < totalSize) {
-//            StringBuilder urlBuilder = new StringBuilder("http://www.localdata.go.kr/platform/rest/TO0/openDataApi");
-//            urlBuilder.append("?authKey=" + URLEncoder.encode(beautyKey, "UTF-8"));
-//            urlBuilder.append("&opnSvcId=" + URLEncoder.encode("02_03_11_P", "UTF-8"));
-//            urlBuilder.append("&pageIndex=" + URLEncoder.encode(String.valueOf(startIndex), "UTF-8"));
-//            urlBuilder.append("&pageSize=" + URLEncoder.encode(String.valueOf(finalIndex), "UTF-8"));
-//
-//            URL url = new URL(urlBuilder.toString());
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setRequestMethod("GET");
-//            conn.setRequestProperty("Content-type", "application/xml");
-//
-//            BufferedReader rd;
-//            if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-//                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            } else {
-//                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            String line;
-//            while ((line = rd.readLine()) != null) {
-//                sb.append(line);
-//            }
-//
-//            rd.close();
-//            conn.disconnect();
-//
-//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//            DocumentBuilder builder = factory.newDocumentBuilder();
-//            Document doc = builder.parse(new InputSource(new StringReader(sb.toString())));
-//
-//            NodeList rows = doc.getElementsByTagName("row");
-//            log.info("row:{}", rows);
-//
-//            for (int i = 0; i < rows.getLength(); i++) {
-//                NodeList children = rows.item(i).getChildNodes();
-//                Map<String, Object> itemMap = new HashMap<>();
-//                for (int j = 0; j < children.getLength(); j++) {
-//                    String nodeName = children.item(j).getNodeName();
-//                    String nodeValue = children.item(j).getTextContent();
-//                    itemMap.put(nodeName, nodeValue);
-//                }
-//                String tradeState = (String) itemMap.get("trdStateGbn");
-//                log.info("tradeState: {}", tradeState);
-//
-//                String address = (String) itemMap.get("rdnWhlAddr");
-//                log.info("address: {}", address);
-//
-//                Map<String, Object> itemValue = new HashMap<>();
-//
-//                // 주소 정리
-//                if (address.contains(",")) {
-//                    address = address.split(",")[0].trim();
-//                }
-//                if (address.contains("(")) {
-//                    address = address.split("\\(")[0].trim();
-//                }
-//                if (address.contains("*")) {
-//                    address = address.split("\\*")[0].trim();
-//                }
-//
-//                itemValue.put("address", address);
-//                itemValue.put("name", (String) itemMap.get("bplcNm"));
-//                itemValue.put("phoneNumber", itemMap.get("siteTel"));
-//
-//                if ("01".equals(tradeState) && address.contains(region)) {
-//                    resultMap.add(itemValue);
-//                }
-//                startIndex = finalIndex + 1;
-//                if(finalIndex + 1000 < totalSize){
-//                    finalIndex = finalIndex + 1000;
-//                }
-//                else{
-//                    finalIndex = totalSize;
-//                }
-//
-//            }
-//
-//        }
-//        // Map 데이터 출력
-//        System.out.println("Mapped data: " + resultMap);
-//        return resultMap;
-//    }
     public List<APIDTO.MapListResponse> getBeautyShopList(String region) throws Exception {
         int totalSize = getBeautyApiSize();
 
@@ -621,7 +484,6 @@ public class APIService {
                 itemValue.put("phoneNumber", itemMap.get("siteTel"));
 
                 if ("01".equals(tradeState) && address.contains(region)) {
-                    // Map 형식의 데이터를 APIDTO.MapListResponse 형식으로 변환하여 추가합니다.
                     APIDTO.MapListResponse mapResponse = new APIDTO.MapListResponse();
                     mapResponse.setName((String) itemMap.get("bplcNm"));
                     mapResponse.setAddress(address);
@@ -634,15 +496,12 @@ public class APIService {
                 } else {
                     finalIndex = totalSize;
                 }
-
             }
 
         }
-        // Map 데이터 출력
         System.out.println("Mapped data: " + resultMap);
         return resultMap;
     }
-
 
 
     public int getBeautyApiSize() throws Exception {
@@ -685,11 +544,6 @@ public class APIService {
         log.info("totalSize2 : {}", totalSize);
         return totalSize;
     }
-
-
-
-
-
 
 
 }
