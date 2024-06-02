@@ -44,10 +44,10 @@ public class CommonLoginSuccessHandler implements AuthenticationSuccessHandler {
         String userId = (String) responseMap.get("socialId");
         redisRepository.saveRefreshToken(userId, refreshToken);
 
+
         log.info("==============================success==================================");
         log.info("userId = {}", userId);
-        log.info("refreshToken = {}", (String) responseMap.get("refreshToken"));
-
+        log.info("refreshToken = {}",refreshToken);
 
         Gson gson = new Gson();
         String json = gson.toJson(responseMap);

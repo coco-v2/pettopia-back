@@ -3,6 +3,7 @@ package org.pettopia.pettopiaback.jwt.utils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.RoleType;
 import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
@@ -20,7 +21,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-
+@Slf4j
 public class JwtUtils {
 
     public static String secretKey = JwtConstants.key;
@@ -30,7 +31,7 @@ public class JwtUtils {
         return header.split(" ")[1];
     }
 
-    public static String generateToken(Map<String, Object> valueMap, int validTime) {
+    public static String generateToken(Map<String, Object> valueMap, long validTimeMillis) {
         SecretKey key = null;
         try {
             key = Keys.hmacShaKeyFor(JwtUtils.secretKey.getBytes(StandardCharsets.UTF_8));
@@ -38,10 +39,10 @@ public class JwtUtils {
             throw new RuntimeException(e.getMessage());
         }
         return Jwts.builder()
-                .setHeader(Map.of("typ","JWT"))
+                .setHeader(Map.of("typ", "JWT"))
                 .setClaims(valueMap)
-                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(validTime).toInstant()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + validTimeMillis))
                 .signWith(key)
                 .compact();
     }
@@ -76,7 +77,7 @@ public class JwtUtils {
         } catch(ExpiredJwtException expiredJwtException){
             throw new CustomExpiredJwtException("토큰이 만료되었습니다", expiredJwtException);
         } catch(Exception e){
-            throw new CustomJwtException("Error");
+            throw new CustomJwtException("유효하지 않은 토큰입니다", e);
         }
         return claim;
     }
@@ -101,11 +102,16 @@ public class JwtUtils {
     // 만료된 토큰에서 클레임을 가져오는 메서드
     public static Map<String, Object> getClaimsWithoutValidation(String token) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException expiredJwtException) {
+            log.warn("Expired JWT token. Extracting claims without validation.");
+            return expiredJwtException.getClaims();
+        }
     }
 
 }

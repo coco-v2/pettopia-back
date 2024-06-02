@@ -1,5 +1,6 @@
 package org.pettopia.pettopiaback.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class RedisRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -25,8 +27,9 @@ public class RedisRepository {
     }
 
     public void saveRefreshToken(String userId, String refreshToken) {
-        redisTemplate.opsForValue().set(userId, refreshToken, expirationTimeMillis);
-        redisTemplate.expire(userId, expirationTimeMillis, TimeUnit.SECONDS);
+//        redisTemplate.opsForValue().set(userId, refreshToken);
+        redisTemplate.opsForValue().set(userId, refreshToken, expirationTimeMillis, TimeUnit.MILLISECONDS);
+        log.info("Refresh Token saved for userId: " + userId + " with expiration: " + expirationTimeMillis + " ms");
     }
 
     public void deleteRefreshToken(String userId){
@@ -34,7 +37,12 @@ public class RedisRepository {
     }
 
     public String getRefreshToken(String userId) {
-        return (String) redisTemplate.opsForValue().get(userId);
+        String refreshToken =  (String) redisTemplate.opsForValue().get(userId);
+
+        if (refreshToken == null) {
+            log.warn("No Refresh Token found for userId: " + userId);
+        }
+        return refreshToken;
     }
 
 

@@ -7,8 +7,11 @@ import org.pettopia.pettopiaback.jwt.exception.CustomJwtException;
 import org.pettopia.pettopiaback.jwt.utils.JwtConstants;
 import org.pettopia.pettopiaback.jwt.utils.JwtUtils;
 import org.pettopia.pettopiaback.service.JwtService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -23,10 +26,15 @@ public class JwtController {
     private final JwtService jwtService;
 
 
-    @RequestMapping("/acess")
-    public Map<String, Object> refresh(@RequestHeader("Authorization") String authHeader) {
-        log.info("Access Token = {}", authHeader);
-        return jwtService.validateAccessToken(authHeader);
+    @RequestMapping("/access")
+    public ResponseEntity<Map<String, Object>> validateAccess(@RequestParam String authHeader) {
+        try {
+            log.info("Access Token = {}", authHeader);
+            Map<String, Object> response = jwtService.validateAccessToken(authHeader);
+            return ResponseEntity.ok(response);
+        } catch (CustomJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @RequestMapping("/refresh")
