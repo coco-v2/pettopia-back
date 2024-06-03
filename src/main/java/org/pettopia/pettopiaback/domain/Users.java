@@ -41,5 +41,10 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
+    private String socialAccessToken;
 
+
+    public void setAccessToken(String accessToken) {
+        this.socialAccessToken = accessToken;
+    }
 }
