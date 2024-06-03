@@ -15,7 +15,6 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
 
     private Users user;
     private Collection<? extends GrantedAuthority> authorities;
-
     private Map<String, Object> attributes;
 
     public PrincipalDetail(Users user, Collection<? extends GrantedAuthority> authorities) {

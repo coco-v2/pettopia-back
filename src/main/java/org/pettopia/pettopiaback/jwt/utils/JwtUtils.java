@@ -26,7 +26,7 @@ public class JwtUtils {
 
     public static String secretKey = JwtConstants.key;
 
-    // 헤더에 "Bearer XXX" 형식으로 담겨온 토큰을 추출한다
+    // 헤더에 "Bearer XXX" 형식으로 담겨온 토큰을 추출함
     public static String getTokenFromHeader(String header) {
         return header.split(" ")[1];
     }
@@ -82,7 +82,7 @@ public class JwtUtils {
         return claim;
     }
 
-    // 토큰이 만료되었는지 판단하는 메서드
+    // 토큰이 만료되었는지 판단함
     public static boolean isExpired(String token) {
         try {
             validateToken(token);
@@ -92,14 +92,14 @@ public class JwtUtils {
         return false;
     }
 
-    // 토큰의 남은 만료시간 계산
+    // 토큰의 남은 만료시간 계산함
     public static long tokenRemainTime(Integer expTime) {
         Date expDate = new Date((long) expTime * (1000));
         long remainMs = expDate.getTime() - System.currentTimeMillis();
         return remainMs / (1000 * 60);
     }
 
-    // 만료된 토큰에서 클레임을 가져오는 메서드
+    // 만료된 토큰에서 클레임을 가져옴
     public static Map<String, Object> getClaimsWithoutValidation(String token) {
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         try {
