@@ -75,7 +75,19 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String socialId = naverUserInfo.getSocialId();
             String name = naverUserInfo.getName();
             String email = naverUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
+//            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
+            OAuth2User user = processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
+
+            // 네이버 accessToken 저장
+            Optional<Users> optionalUser = userRepository.findBySocialId(socialId);
+            if (optionalUser.isPresent()) {
+                Users savedUser = optionalUser.get();
+                savedUser.setAccessToken(accessToken);
+                userRepository.save(savedUser);
+            }
+
+            return user;
+
         } else if ("google".equals(providerId)) {
             GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
             String socialId = googleUserInfo.getSocialId();
@@ -113,15 +125,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String socialId = (String) principal.getMemberInfo().get("socialId");
 
         SocialType provider = userRepository.findSocialTypeBySocialId(socialId);
+        String accessToken = userRepository.findSocialAccessTokenBySocialId(socialId);
 
         log.info("logout - socialId = {}", socialId);
         log.info("logout - provider = {}", provider.name());
-        if ("KAKAO".equalsIgnoreCase(provider.name())) {
+        if (provider == SocialType.KAKAO) {
             return kakaoLogout(socialId);
-        } else if ("NAVER".equalsIgnoreCase(provider.name())) {
-            String accessToken = (String) principal.getAttributes().get("access_token");
-            log.info("logout - accessToken = {}", accessToken);
-
+        } else if (provider == SocialType.NAVER) {
             return naverLogout(accessToken);
         }
 
@@ -168,7 +178,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     }
 
     public ResponseEntity<String> naverLogout(String accessToken) {
-        String reqUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=" + naverClientId + "&client_secret=" + naverClientSecret + "&access_token=" + accessToken + "&service_provider=NAVER";
+        String reqUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=" + naverClientId + "&client_secret=" + naverClientSecret + "&access_token=" + accessToken;
 
         try {
             URL url = new URL(reqUrl);

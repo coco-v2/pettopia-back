@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query("SELECT u.socialType FROM Users u WHERE u.socialId = :socialId")
     SocialType findSocialTypeBySocialId(@Param("socialId") String socialId);
 
+    @Query("SELECT u.socialAccessToken FROM Users u WHERE u.socialId = :socialId")
+    String findSocialAccessTokenBySocialId(@Param("socialId") String socialId);
 }
