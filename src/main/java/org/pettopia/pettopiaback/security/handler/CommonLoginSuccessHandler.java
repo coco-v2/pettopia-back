@@ -46,8 +46,6 @@ public class CommonLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
         log.info("==============================success==================================");
-        log.info("userId = {}", userId);
-        log.info("refreshToken = {}",refreshToken);
 
         Gson gson = new Gson();
         String json = gson.toJson(responseMap);

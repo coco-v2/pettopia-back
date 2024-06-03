@@ -10,6 +10,10 @@ import org.pettopia.pettopiaback.oauth2.user.GoogleUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.KakaoUserInfo;
 import org.pettopia.pettopiaback.oauth2.user.NaverUserInfo;
 import org.pettopia.pettopiaback.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -24,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,39 +38,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
-
     private final UserRepository userRepository;
+
+    @Value("${spring.security.oauth2.client.provider.kakao.admin-key}")
+    private String kakaoAdminKey;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    private String naverClientId;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
+
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("--------------------------- OAuth2UserService ---------------------------");
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+        Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
+        String accessToken = userRequest.getAccessToken().getTokenValue();
+        attributes.put("access_token", accessToken);
 
-        log.info("OAuth2USer = {}", oAuth2User);
+        log.info("OAuth2User = {}", oAuth2User);
         log.info("attributes = {}", attributes);
-
-//        // nameAttributeKey
-//        String userNameAttributeName = userRequest.getClientRegistration()
-//                .getProviderDetails()
-//                .getUserInfoEndpoint()
-//                .getUserNameAttributeName();
-//        log.info("nameAttributeKey = {}", userNameAttributeName);
-//
-//        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
-//        String socialId = kakaoUserInfo.getSocialId();
-//        String name = kakaoUserInfo.getName();
-//        String email = kakaoUserInfo.getEmail();
-//
-//        // 소셜 ID 로 사용자를 조회, 없으면 socialId 와 이름으로 사용자 생성
-//        Optional<Users> bySocialId = userRepository.findBySocialId(socialId);
-//        Users member = bySocialId.orElseGet(
-//                () -> saveSocialMember(socialId, name, email, SocialType.KAKAO)
-//        );
-//
-//        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())),
-//                attributes);
 
         String providerId = userRequest.getClientRegistration().getRegistrationId();
 
@@ -74,38 +69,33 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String socialId = kakaoUserInfo.getSocialId();
             String name = kakaoUserInfo.getName();
             String email = kakaoUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO);
+            return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO, accessToken);
         } else if ("naver".equals(providerId)) {
             NaverUserInfo naverUserInfo = new NaverUserInfo(attributes);
             String socialId = naverUserInfo.getSocialId();
             String name = naverUserInfo.getName();
             String email = naverUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER);
+            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
         } else if ("google".equals(providerId)) {
             GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
             String socialId = googleUserInfo.getSocialId();
             String name = googleUserInfo.getName();
             String email = googleUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE);
+            return processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE, accessToken);
         }
 
         throw new UnsupportedOperationException("Unsupported provider: " + providerId);
-
     }
 
-    //만든거
-
-    private OAuth2User processSocialUser(Map<String, Object> attributes, String socialId, String name, String email, SocialType type) {
+    private OAuth2User processSocialUser(Map<String, Object> attributes, String socialId, String name, String email, SocialType type, String accessToken) {
         Optional<Users> bySocialId = userRepository.findBySocialId(socialId);
         Users member = bySocialId.orElseGet(
                 () -> saveSocialMember(socialId, name, email, type)
         );
 
-        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())), attributes);
+        return new PrincipalDetail(member, Collections.singleton(new SimpleGrantedAuthority(member.getRoleType().getValue())));
     }
 
-
-    // 소셜 ID 로 가입된 사용자가 없으면 새로운 사용자를 만들어 저장한다
     public Users saveSocialMember(String socialId, String name, String email, SocialType type) {
         log.info("--------------------------- saveSocialMember ---------------------------");
         Users newMember = Users.builder()
@@ -119,14 +109,39 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         return userRepository.save(newMember);
     }
 
-    public void kakaoLogout(String accessToken) {
-        String reqUrl = "https://kapi.kakao.com/v1/user/logout";
+    public ResponseEntity<String> logout(PrincipalDetail principal) {
+        String socialId = (String) principal.getMemberInfo().get("socialId");
+
+        SocialType provider = userRepository.findSocialTypeBySocialId(socialId);
+
+        log.info("logout - socialId = {}", socialId);
+        log.info("logout - provider = {}", provider.name());
+        if ("KAKAO".equalsIgnoreCase(provider.name())) {
+            return kakaoLogout(socialId);
+        } else if ("NAVER".equalsIgnoreCase(provider.name())) {
+            String accessToken = (String) principal.getAttributes().get("access_token");
+            log.info("logout - accessToken = {}", accessToken);
+
+            return naverLogout(accessToken);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unsupported provider: " + provider);
+    }
+
+    public ResponseEntity<String> kakaoLogout(String userId) {
+
+        String reqUrl = "https://kapi.kakao.com/v1/user/unlink";
 
         try {
             URL url = new URL(reqUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoAdminKey);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+
+            String postParams = "target_id_type=user_id&target_id=" + userId;
+            conn.getOutputStream().write(postParams.getBytes("UTF-8"));
 
             int responseCode = conn.getResponseCode();
             log.info("[OAuth2UserService.kakaoLogout] Response Code: {}", responseCode);
@@ -145,12 +160,80 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             }
             String responseBody = responseSb.toString();
             log.info("Kakao logout - Response Body: {}", responseBody);
+            return ResponseEntity.ok("Logged out from Kakao successfully");
         } catch (Exception e) {
             log.error("Error occurred while logging out from Kakao: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while logging out from Kakao: " + e.getMessage());
         }
     }
 
+    public ResponseEntity<String> naverLogout(String accessToken) {
+        String reqUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=" + naverClientId + "&client_secret=" + naverClientSecret + "&access_token=" + accessToken + "&service_provider=NAVER";
 
+        try {
+            URL url = new URL(reqUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
+            int responseCode = conn.getResponseCode();
+            log.info("[OAuth2UserService.naverLogout] Response Code: {}", responseCode);
+
+            BufferedReader br;
+            if (responseCode >= 200 && responseCode <= 300) {
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+
+            StringBuilder responseSb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                responseSb.append(line);
+            }
+            String responseBody = responseSb.toString();
+            log.info("Naver logout - Response Body: {}", responseBody);
+            return ResponseEntity.ok("Logged out from Naver successfully");
+        } catch (Exception e) {
+            log.error("Error occurred while logging out from Naver: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while logging out from Naver: " + e.getMessage());
+        }
+    }
+
+//    public void kakaoLogoutVoid(String userId) {
+//        String reqUrl = "https://kapi.kakao.com/v1/user/unlink";
+//
+//        try {
+//            URL url = new URL(reqUrl);
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setRequestMethod("POST");
+//            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoAdminKey);
+//            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//            conn.setDoOutput(true);
+//
+//            String postParams = "target_id_type=user_id&target_id=" + userId;
+//            conn.getOutputStream().write(postParams.getBytes("UTF-8"));
+//
+//            int responseCode = conn.getResponseCode();
+//            log.info("[OAuth2UserService.kakaoLogout] Response Code: {}", responseCode);
+//
+//            BufferedReader br;
+//            if (responseCode >= 200 && responseCode <= 300) {
+//                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            } else {
+//                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+//            }
+//
+//            StringBuilder responseSb = new StringBuilder();
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                responseSb.append(line);
+//            }
+//            String responseBody = responseSb.toString();
+//            log.info("Kakao logout - Response Body: {}", responseBody);
+//        } catch (Exception e) {
+//            log.error("Error occurred while logging out from Kakao: {}", e.getMessage());
+//        }
+//    }
 
 }
+

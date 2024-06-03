@@ -25,6 +25,8 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
     private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/"
             , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html", "/api/v1/life/tip"};
 
+    private static final String ACCESS_ENDPOINT = "/api/v1/jwt/access";
+
     private static void checkAuthorizationHeader(String header) {
         if(header == null) {
             throw new CustomJwtException("토큰이 전달되지 않았습니다");
@@ -46,14 +48,28 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         log.info("--------------------------- JwtVerifyFilter ---------------------------");
 
         String authHeader = request.getHeader(JwtConstants.JWT_HEADER);
+        String requestURI = request.getRequestURI();
 
         try {
             checkAuthorizationHeader(authHeader);   // header 가 올바른 형식인지 체크
             String token = JwtUtils.getTokenFromHeader(authHeader);
-            System.out.println(token);
+            log.info("JwtVerifyFilter Token = {}", token);
+
+            if (ACCESS_ENDPOINT.equals(requestURI)) {
+                try {
+                    // 토큰 검증 (만료된 토큰도 허용)
+                    Map<String, Object> claims = JwtUtils.getClaimsWithoutValidation(token);
+                    request.setAttribute("claims", claims);
+                } catch (CustomJwtException e) {
+                    log.error("Invalid JWT token for /access endpoint", e);
+                }
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             Authentication authentication = JwtUtils.getAuthentication(token);
             System.out.println(authentication);
-            log.info("authentication = {}", authentication);
+            log.info("JwtVerifyFilter authentication = {}", authentication);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
