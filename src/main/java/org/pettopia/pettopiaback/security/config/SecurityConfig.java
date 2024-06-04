@@ -73,9 +73,10 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html", "/api/v1/life/tip").permitAll()
-                        .requestMatchers("/api/v1/shot_records/**", "/api/v1/pet/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"
+                                , "/api/v1/oauth2/authorization/google", "/login/oauth2/code/google").permitAll()
+//                        .requestMatchers("/api/v1/shot_records/**", "/api/v1/pet/**").authenticated()
+                        .anyRequest().authenticated()
         );
 
 
@@ -87,9 +88,6 @@ public class SecurityConfig {
             httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.NEVER);
         });
 
-
-
-
         http.addFilterBefore(jwtVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.formLogin(httpSecurityFormLoginConfigurer -> {httpSecurityFormLoginConfigurer
@@ -100,6 +98,12 @@ public class SecurityConfig {
 
         http.oauth2Login(httpSecurityOAuth2LoginConfigurer ->
                 httpSecurityOAuth2LoginConfigurer.loginPage("/oauth2/login")
+                        .successHandler(commonLoginSuccessHandler())
+                        .userInfoEndpoint(userInfoEndpointConfig ->
+                                userInfoEndpointConfig.userService(oAuth2UserService)));
+
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer ->
+                httpSecurityOAuth2LoginConfigurer.loginPage("/oauth2/authorization/google")
                         .successHandler(commonLoginSuccessHandler())
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(oAuth2UserService)));

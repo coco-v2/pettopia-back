@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -49,6 +50,11 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -69,16 +75,30 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String socialId = kakaoUserInfo.getSocialId();
             String name = kakaoUserInfo.getName();
             String email = kakaoUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO, accessToken);
+            return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO);
         } else if ("naver".equals(providerId)) {
             NaverUserInfo naverUserInfo = new NaverUserInfo(attributes);
             String socialId = naverUserInfo.getSocialId();
             String name = naverUserInfo.getName();
             String email = naverUserInfo.getEmail();
-//            return processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
-            OAuth2User user = processSocialUser(attributes, socialId, name, email, SocialType.NAVER, accessToken);
+            OAuth2User user = processSocialUser(attributes, socialId, name, email, SocialType.NAVER);
 
-            // 네이버 accessToken 저장
+            Optional<Users> optionalUser = userRepository.findBySocialId(socialId);
+            if (optionalUser.isPresent()) {
+                Users savedUser = optionalUser.get();
+                savedUser.setAccessToken(accessToken);
+                userRepository.save(savedUser);
+            }
+            return user;
+        } else if ("google".equals(providerId)) {
+            GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
+            String socialId = googleUserInfo.getSocialId();
+            String name = googleUserInfo.getName();
+            String email = googleUserInfo.getEmail();
+            OAuth2User user = processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE);
+
+            System.out.println("여기??????? " + socialId + ":" + name +":"+ email);
+
             Optional<Users> optionalUser = userRepository.findBySocialId(socialId);
             if (optionalUser.isPresent()) {
                 Users savedUser = optionalUser.get();
@@ -87,19 +107,12 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             }
 
             return user;
-
-        } else if ("google".equals(providerId)) {
-            GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
-            String socialId = googleUserInfo.getSocialId();
-            String name = googleUserInfo.getName();
-            String email = googleUserInfo.getEmail();
-            return processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE, accessToken);
         }
 
         throw new UnsupportedOperationException("Unsupported provider: " + providerId);
     }
 
-    private OAuth2User processSocialUser(Map<String, Object> attributes, String socialId, String name, String email, SocialType type, String accessToken) {
+    private OAuth2User processSocialUser(Map<String, Object> attributes, String socialId, String name, String email, SocialType type) {
         Optional<Users> bySocialId = userRepository.findBySocialId(socialId);
         Users member = bySocialId.orElseGet(
                 () -> saveSocialMember(socialId, name, email, type)
@@ -208,6 +221,29 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while logging out from Naver: " + e.getMessage());
         }
     }
+
+    private static final String GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+    private static final String RESPONSE_TYPE = "code";
+    private static final String SCOPE = "email profile";
+
+    public String getGoogleLoginUrl() {
+
+        System.out.println("요기??" +  UriComponentsBuilder.fromHttpUrl(GOOGLE_OAUTH_URL)
+                .queryParam("client_id", googleClientId)
+                .queryParam("redirect_uri", googleRedirectUri)
+                .queryParam("response_type", RESPONSE_TYPE)
+                .queryParam("scope", SCOPE)
+                .build()
+                .toString());
+        return UriComponentsBuilder.fromHttpUrl(GOOGLE_OAUTH_URL)
+                .queryParam("client_id", googleClientId)
+                .queryParam("redirect_uri", googleRedirectUri)
+                .queryParam("response_type", RESPONSE_TYPE)
+                .queryParam("scope", SCOPE)
+                .build()
+                .toString();
+    }
+
 
 //    public void kakaoLogoutVoid(String userId) {
 //        String reqUrl = "https://kapi.kakao.com/v1/user/unlink";

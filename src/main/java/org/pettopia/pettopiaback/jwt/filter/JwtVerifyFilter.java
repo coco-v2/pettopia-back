@@ -23,7 +23,8 @@ import java.util.Map;
 public class JwtVerifyFilter extends OncePerRequestFilter {
 
     private static final String[] whitelist = {"/signUp", "/login" , "/refresh", "/"
-            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html", "/api/v1/life/tip"};
+            , "/index.html","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui/index.html","/swagger-ui.html"
+            , "/api/v1/oauth2/authorization/google", "/login/oauth2/code/google"};
 
     private static final String ACCESS_ENDPOINT = "/api/v1/jwt/access";
 
@@ -91,4 +92,3 @@ public class JwtVerifyFilter extends OncePerRequestFilter {
         }
     }
 }
-
