@@ -13,7 +13,6 @@ import org.pettopia.pettopiaback.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -56,6 +55,10 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
+    private static final String GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+    private static final String RESPONSE_TYPE = "code";
+    private static final String SCOPE = "email profile";
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("--------------------------- OAuth2UserService ---------------------------");
@@ -96,8 +99,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String name = googleUserInfo.getName();
             String email = googleUserInfo.getEmail();
             OAuth2User user = processSocialUser(attributes, socialId, name, email, SocialType.GOOGLE);
-
-            System.out.println("여기??????? " + socialId + ":" + name +":"+ email);
 
             Optional<Users> optionalUser = userRepository.findBySocialId(socialId);
             if (optionalUser.isPresent()) {
@@ -144,12 +145,56 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         log.info("logout - provider = {}", provider.name());
         if (provider == SocialType.KAKAO) {
             return kakaoLogout(socialId);
-        } else if (provider == SocialType.NAVER) {
+        } 
+        else if (provider == SocialType.NAVER) {
             return naverLogout(accessToken);
+        } 
+        else if (provider == SocialType.GOOGLE) {
+            return googleLogout(accessToken);
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unsupported provider: " + provider);
     }
+
+    public ResponseEntity<String> googleLogout(String accessToken) {
+        String reqUrl = "https://oauth2.googleapis.com/revoke?token=" + accessToken;
+
+        try {
+            URL url = new URL(reqUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+
+            String postParams = "token=" + accessToken;
+            byte[] postDataBytes = postParams.getBytes("UTF-8");
+            conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+            conn.getOutputStream().write(postDataBytes);
+
+            int responseCode = conn.getResponseCode();
+            log.info("[OAuth2UserService.googleLogout] Response Code: {}", responseCode);
+
+            BufferedReader br;
+            if (responseCode >= 200 && responseCode <= 300) {
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+
+            StringBuilder responseSb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                responseSb.append(line);
+            }
+            String responseBody = responseSb.toString();
+            log.info("Google logout - Response Body: {}", responseBody);
+            return ResponseEntity.ok("Logged out from Google successfully");
+        } catch (Exception e) {
+            log.error("Error occurred while logging out from Google: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while logging out from Google: " + e.getMessage());
+        }
+    }
+
 
     public ResponseEntity<String> kakaoLogout(String userId) {
 
@@ -222,19 +267,9 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private static final String GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-    private static final String RESPONSE_TYPE = "code";
-    private static final String SCOPE = "email profile";
 
     public String getGoogleLoginUrl() {
 
-        System.out.println("요기??" +  UriComponentsBuilder.fromHttpUrl(GOOGLE_OAUTH_URL)
-                .queryParam("client_id", googleClientId)
-                .queryParam("redirect_uri", googleRedirectUri)
-                .queryParam("response_type", RESPONSE_TYPE)
-                .queryParam("scope", SCOPE)
-                .build()
-                .toString());
         return UriComponentsBuilder.fromHttpUrl(GOOGLE_OAUTH_URL)
                 .queryParam("client_id", googleClientId)
                 .queryParam("redirect_uri", googleRedirectUri)
@@ -243,43 +278,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 .build()
                 .toString();
     }
-
-
-//    public void kakaoLogoutVoid(String userId) {
-//        String reqUrl = "https://kapi.kakao.com/v1/user/unlink";
-//
-//        try {
-//            URL url = new URL(reqUrl);
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setRequestMethod("POST");
-//            conn.setRequestProperty("Authorization", "KakaoAK " + kakaoAdminKey);
-//            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//            conn.setDoOutput(true);
-//
-//            String postParams = "target_id_type=user_id&target_id=" + userId;
-//            conn.getOutputStream().write(postParams.getBytes("UTF-8"));
-//
-//            int responseCode = conn.getResponseCode();
-//            log.info("[OAuth2UserService.kakaoLogout] Response Code: {}", responseCode);
-//
-//            BufferedReader br;
-//            if (responseCode >= 200 && responseCode <= 300) {
-//                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            } else {
-//                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//            }
-//
-//            StringBuilder responseSb = new StringBuilder();
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                responseSb.append(line);
-//            }
-//            String responseBody = responseSb.toString();
-//            log.info("Kakao logout - Response Body: {}", responseBody);
-//        } catch (Exception e) {
-//            log.error("Error occurred while logging out from Kakao: {}", e.getMessage());
-//        }
-//    }
 
 }
 
