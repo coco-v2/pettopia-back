@@ -20,7 +20,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -265,18 +264,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             log.error("Error occurred while logging out from Naver: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while logging out from Naver: " + e.getMessage());
         }
-    }
-
-
-    public String getGoogleLoginUrl() {
-
-        return UriComponentsBuilder.fromHttpUrl(GOOGLE_OAUTH_URL)
-                .queryParam("client_id", googleClientId)
-                .queryParam("redirect_uri", googleRedirectUri)
-                .queryParam("response_type", RESPONSE_TYPE)
-                .queryParam("scope", SCOPE)
-                .build()
-                .toString();
     }
 
 }

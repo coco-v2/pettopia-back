@@ -14,22 +14,14 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("")
 public class UserController {
 
     private final OAuth2UserService oauth2UserService;
 
-    @PostMapping("/user/logout")
+    @PostMapping("/api/v1/user/logout")
     public ResponseEntity<String> logout(@AuthenticationPrincipal PrincipalDetail principal) {
         return oauth2UserService.logout(principal);
     }
-
-    @CrossOrigin(origins = "*")
-    @GetMapping("/oauth2/authorization/google")
-    public ResponseEntity<String> redirectToGoogleLogin() {
-        String googleLoginUrl = oauth2UserService.getGoogleLoginUrl();
-        return ResponseEntity.ok(googleLoginUrl);
-    }
-
 
 }
