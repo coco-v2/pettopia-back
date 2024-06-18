@@ -22,7 +22,7 @@ public class APIController {
 
 
     @GetMapping("/map/hospital/{address}")
-    public ResponseEntity  <List<APIDTO.MapListResponse>> getShotRecordsList(@PathVariable String address) throws Exception {
+    public ResponseEntity  <List<APIDTO.MapListResponse>> getHospitalMapList(@PathVariable String address) throws Exception {
 
         List<APIDTO.MapListResponse> hospitalList = apiService.getHospitalMapList(address);
         return ResponseEntity.ok(hospitalList);
