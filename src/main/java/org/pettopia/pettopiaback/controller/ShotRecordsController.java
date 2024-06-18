@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.pettopia.pettopiaback.domain.Users;
 import org.pettopia.pettopiaback.dto.PrincipalDetail;
 import org.pettopia.pettopiaback.dto.ShotRecordsDTO;
 import org.pettopia.pettopiaback.exception.NotFoundException;

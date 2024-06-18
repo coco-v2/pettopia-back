@@ -48,15 +48,15 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String googleClientId;
-
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String googleRedirectUri;
-
-    private static final String GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-    private static final String RESPONSE_TYPE = "code";
-    private static final String SCOPE = "email profile";
+//    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+//    private String googleClientId;
+//
+//    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+//    private String googleRedirectUri;
+//
+//    private static final String GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+//    private static final String RESPONSE_TYPE = "code";
+//    private static final String SCOPE = "email profile";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -78,7 +78,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             String name = kakaoUserInfo.getName();
             String email = kakaoUserInfo.getEmail();
             return processSocialUser(attributes, socialId, name, email, SocialType.KAKAO);
-        } else if ("naver".equals(providerId)) {
+        }
+        else if ("naver".equals(providerId)) {
             NaverUserInfo naverUserInfo = new NaverUserInfo(attributes);
             String socialId = naverUserInfo.getSocialId();
             String name = naverUserInfo.getName();
@@ -92,7 +93,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 userRepository.save(savedUser);
             }
             return user;
-        } else if ("google".equals(providerId)) {
+        }
+        else if ("google".equals(providerId)) {
             GoogleUserInfo googleUserInfo = new GoogleUserInfo(attributes);
             String socialId = googleUserInfo.getSocialId();
             String name = googleUserInfo.getName();
@@ -105,7 +107,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 savedUser.setAccessToken(accessToken);
                 userRepository.save(savedUser);
             }
-
             return user;
         }
 

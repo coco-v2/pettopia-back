@@ -1,5 +1,6 @@
 package org.pettopia.pettopiaback.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class UserController {
 
     private final OAuth2UserService oauth2UserService;
 
+    @Operation(summary = "소셜 로그아웃")
     @PostMapping("/api/v1/user/logout")
     public ResponseEntity<String> logout(@AuthenticationPrincipal PrincipalDetail principal) {
         return oauth2UserService.logout(principal);

@@ -1,10 +1,8 @@
 package org.pettopia.pettopiaback.oauth2.user;
 
-import lombok.AllArgsConstructor;
-
 import java.util.Map;
 
-public class NaverUserInfo {
+public class NaverUserInfo implements OAuth2UserInfo {
 
     private static Map<String, Object> response;
 
@@ -18,6 +16,11 @@ public class NaverUserInfo {
 
     public String getName() {
         return String.valueOf(response.get("name"));
+    }
+
+    @Override
+    public String getProvider() {
+        return "NAVER";
     }
 
     public String getEmail() {

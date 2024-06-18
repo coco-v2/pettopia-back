@@ -27,7 +27,6 @@ public class RedisRepository {
     }
 
     public void saveRefreshToken(String userId, String refreshToken) {
-//        redisTemplate.opsForValue().set(userId, refreshToken);
         redisTemplate.opsForValue().set(userId, refreshToken, expirationTimeMillis, TimeUnit.MILLISECONDS);
         log.info("Refresh Token saved for userId: " + userId + " with expiration: " + expirationTimeMillis + " ms");
     }

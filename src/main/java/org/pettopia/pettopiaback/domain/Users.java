@@ -19,7 +19,6 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
-//    @NotNull
     @CreationTimestamp
     @Column(name = "create_at")
     private LocalDateTime createAt = LocalDateTime.now();

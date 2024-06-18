@@ -11,5 +11,4 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     Optional<Medicine> findByName(String name);
 
-
 }

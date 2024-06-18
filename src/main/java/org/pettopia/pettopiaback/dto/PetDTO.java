@@ -2,8 +2,6 @@ package org.pettopia.pettopiaback.dto;
 
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class PetDTO {
@@ -91,7 +89,6 @@ public class PetDTO {
         private String protectorName;
 
         private String protectorPhoneNum;
-
     }
 
     @AllArgsConstructor
@@ -113,7 +110,6 @@ public class PetDTO {
 
         @NotNull(message = "간식횟수가 null이면 안됩니다.")
         private Integer snackCnt;
-
     }
 
     @Getter

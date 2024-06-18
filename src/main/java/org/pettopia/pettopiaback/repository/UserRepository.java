@@ -10,12 +10,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmail(@Param("email") String email);
-
     Optional<Users> findBySocialId(String socialId);
-
     @Query("SELECT u.socialType FROM Users u WHERE u.socialId = :socialId")
     SocialType findSocialTypeBySocialId(@Param("socialId") String socialId);
-
     @Query("SELECT u.socialAccessToken FROM Users u WHERE u.socialId = :socialId")
     String findSocialAccessTokenBySocialId(@Param("socialId") String socialId);
 }

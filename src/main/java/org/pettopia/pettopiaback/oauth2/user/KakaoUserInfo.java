@@ -1,10 +1,8 @@
 package org.pettopia.pettopiaback.oauth2.user;
 
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
 import java.util.Map;
 
-public class KakaoUserInfo {
+public class KakaoUserInfo implements OAuth2UserInfo {
 
     public static String socialId;
     public static Map<String, Object> account;
@@ -16,13 +14,17 @@ public class KakaoUserInfo {
         profile = (Map<String, Object>) account.get("profile");
     }
 
-
     public String getSocialId() {
         return socialId;
     }
 
     public String getName() {
         return String.valueOf(profile.get("nickname"));
+    }
+
+    @Override
+    public String getProvider() {
+        return "KAKAO";
     }
 
     public String getEmail() {
