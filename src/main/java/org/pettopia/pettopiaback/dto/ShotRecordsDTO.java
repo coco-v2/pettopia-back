@@ -2,9 +2,6 @@ package org.pettopia.pettopiaback.dto;
 
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
-import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
 
 

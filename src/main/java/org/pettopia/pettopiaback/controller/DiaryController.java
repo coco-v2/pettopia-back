@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.List;
 
 @Tag(name = "다이어리 컨트롤러", description = "다이어리 관련 컨트롤러")
 @RequiredArgsConstructor

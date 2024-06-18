@@ -1,7 +1,7 @@
 package org.pettopia.pettopiaback.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.pettopia.pettopiaback.domain.TipCategory;
@@ -19,6 +19,7 @@ public class TipController {
 
     private final TipService tipService;
 
+    @Operation(summary = "반려동물 팁 카테고리별 조회")
     @GetMapping
     public ResponseEntity<TipDTO.ResponseTipList> getTipList( @RequestParam Long petTypePk,
                                                               @RequestParam TipCategory tipCategory

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import org.pettopia.pettopiaback.domain.ConditionOfDefecation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -34,7 +33,6 @@ public class DiaryDTO {
         private String etc;
 
         private LocalDate calendarDate;
-
     }
 
     @Getter
@@ -42,11 +40,10 @@ public class DiaryDTO {
     @AllArgsConstructor
     public static class DiaryListRequest {
 
-       private Long diaryPk;
-
+        private Long diaryPk;
         private LocalDate calendarDate;
 
-        public static DiaryListRequest diarys(Long diaryPk, LocalDate calendarDate){
+        public static DiaryListRequest diarys(Long diaryPk, LocalDate calendarDate) {
             return new DiaryListRequest(diaryPk,calendarDate);
         }
 
@@ -58,13 +55,8 @@ public class DiaryDTO {
     @AllArgsConstructor
     @Builder
     public static class DiaryListResponse{
-
         private Long diaryPk;
-
         private LocalDate calendarDate;
-
-
-
     }
 
 
@@ -89,7 +81,6 @@ public class DiaryDTO {
         private String defecationText;
 
         private String etc;
-
     }
 
     @Getter
@@ -112,16 +103,15 @@ public class DiaryDTO {
         private MedicineDTO.ResponseMedicineList medicineList;
 
         private String calendarDate;
-
-
-
     }
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DiaryDateResponse{
+
         private Long diaryPk;
+
         private Integer mealCont;
 
         private Integer snackCnt;
@@ -137,9 +127,6 @@ public class DiaryDTO {
         private MedicineDTO.ResponseMedicineList medicineList;
 
         private String calendarDate;
-
-
-
     }
 
 }
